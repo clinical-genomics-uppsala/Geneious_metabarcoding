@@ -1,0 +1,8 @@
+name: emu
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.7
+  - emu=3.4.4 
