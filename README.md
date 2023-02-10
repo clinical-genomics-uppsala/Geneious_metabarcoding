@@ -35,3 +35,4 @@ The plugin runs an Emu docker container from Geneious. The plugin is adapted to 
 	- Press 'Add' to add Docker path and path to user data as options (in this order).
 
 ## Workflow
+`Emu.geneiousWorkflow`

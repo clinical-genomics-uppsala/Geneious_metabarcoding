@@ -1,0 +1,56 @@
+<geneiousWorkflows>
+  <XMLSerialisableRootElement name="Emu" author="Ida Karlsson" geneiousVersion="2021.1.1" uniqueId="5fc81447-3ce5-436d-827e-b6ec0b50467d" revisionNumber="22" description="&lt;html&gt;Workflow to run Emu to classify 16S amplicon sequences. The first step exports selected files to disk from where Emu is run. 'Export to folder' and 'Data path' must be the same. &lt;/html&gt;" bundledIconName="plugin">
+    <workflowElement id="BatchExport" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+      <Options>
+        <option name="fileFormat">fasta</option>
+        <option name="optionsButton">Options</option>
+        <option name="folder" extra="/Users/user/Documents/emu,"></option>
+        <option name="extension">.fasta</option>
+        <option name="exportOptionsXml">&lt;fasta&gt;&#xD;
+  &lt;option name="wrap"&gt;false&lt;/option&gt;&#xD;
+  &lt;option name="replaceSpacesInNameWithUnderscore"&gt;false&lt;/option&gt;&#xD;
+  &lt;option name="description"&gt;true&lt;/option&gt;&#xD;
+  &lt;option name="exportedSequenceCase"&gt;uppercase&lt;/option&gt;&#xD;
+  &lt;option name="replaceCharsInNameWithUnderscore" /&gt;&#xD;
+  &lt;option name="exportInsertionsAndReplacementsInOppositeCase"&gt;false&lt;/option&gt;&#xD;
+  &lt;option name="exportMissingEndAs"&gt;missingEndsAsGaps&lt;/option&gt;&#xD;
+  &lt;option name="allGaps"&gt;remove&lt;/option&gt;&#xD;
+&lt;/fasta&gt;</option>
+        <option name="exportToSingleFile">false</option>
+        <option name="singleFileName">results</option>
+      </Options>
+      <optionToExpose optionName="fileFormat" label="" />
+    </workflowElement>
+    <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementSaveAndContinue">
+      <options>
+        <option name="save">false</option>
+        <option name="saveInSubFolder">false</option>
+        <option name="subFolderName"></option>
+        <option name="addVariable">Include Name...</option>
+        <option name="selectDocuments">false</option>
+        <option name="doWhat">branchFrom</option>
+        <option name="back">2</option>
+      </options>
+    </workflowElement>
+    <workflowElement id="emu_wrapper_" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+      <Options>
+        <childOption name="options">
+          <option name="pathToDocker">/usr/local/bin/docker</option>
+          <option name="pathToData">/Users/user/Documents/emu</option>
+        </childOption>
+      </Options>
+      <optionToExpose optionName="options.pathToDocker" label="" />
+    </workflowElement>
+    <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementSaveAndContinue">
+      <options>
+        <option name="save">true</option>
+        <option name="saveInSubFolder">true</option>
+        <option name="subFolderName">emu</option>
+        <option name="addVariable">Include Name...</option>
+        <option name="selectDocuments">false</option>
+        <option name="doWhat">continue</option>
+        <option name="back">2</option>
+      </options>
+    </workflowElement>
+  </XMLSerialisableRootElement>
+</geneiousWorkflows>
