@@ -6,7 +6,7 @@ Under development
 The plugin runs an Emu docker container from Geneious. The plugin is adapted to run in a workflow where the previous step exports the selected files to a folder selected by the user.
 
 - input: Geneious sequence documents/lists
-- output Geneious: Emu table (counts) combined for all samples
+- output Geneious: Emu table (counts) combined for all samples, or Emu table for single sample with relative abundance and counts
 - output on disk: Emu output for each sample and combined
 
 ## System requirements
@@ -29,10 +29,13 @@ The plugin runs an Emu docker container from Geneious. The plugin is adapted to 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
 	- 'Command Line':
-		`-o emu-combined-species-counts.tsv -g [inputFolderName] [otherOptions]`
-	- Under 'Output' 'File Name:' `emu-combined-species-counts.tsv` and select 'Format:' 'Text file (plain)'
-- Step 3:
-	- Press 'Add' to add Docker path and path to user data as options (in this order).
+		`-o emu_output.tsv -g [inputFolderName] [otherOptions]`
+	- Under 'Output' 'File Name:' `emu_output.tsv` and select 'Format:' 'Text file (plain)'
+- Step 3:  
+	Press 'Add' to add two user options (in this order):   
+	- 'Command Line Switch': pathToDocker, 'Option Label': Docker path  
+	- 'Command Line Switch': pathToData, 'Option Label': Data path  
+	Both 'Command Line Switch' and 'Option Label' should be filled in, but can be modified.
 
 ## Workflow
 `Emu.geneiousWorkflow`
