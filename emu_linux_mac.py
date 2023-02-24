@@ -29,11 +29,11 @@ if len(inFiles) > 0:
     for inFile in inFiles:
         subprocess.run( [pathToDocker, "run", "--rm", "-v", mountPath, "emu3.4.4_image", \
             "emu", "abundance", inFile, \
-            "--db", "/tmp/geneious/emu-database", \
+            "--db", "/emu-database", \
             "--keep-counts", "--keep-files", "--keep-read-assignments", "--output-unclassified", "--threads", "6", \
             "--output-dir", "/geneious"] )
 else:
-    print("No fasta files in " + pathToData)
+    sys.exit("No fasta files in " + pathToData)
 
 
 if len(inFiles) > 1:
