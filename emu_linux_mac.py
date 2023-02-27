@@ -6,6 +6,10 @@ import subprocess
 import shutil
 import glob
 
+# Emu options
+emuImage = "emu3.4.4_git" # "emu3.4.4_image" (database included in image)
+noThreads = "6"
+
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
 
@@ -27,10 +31,9 @@ for file in os.listdir(pathToData):
 # Run emu abundance for each sample
 if len(inFiles) > 0:
     for inFile in inFiles:
-        subprocess.run( [pathToDocker, "run", "--rm", "-v", mountPath, "emu3.4.4_image", \
+        subprocess.run( [pathToDocker, "run", "--rm", "-v", mountPath, emuImage, \
             "emu", "abundance", inFile, \
-            "--db", "/emu-database", \
-            "--keep-counts", "--keep-files", "--keep-read-assignments", "--output-unclassified", "--threads", "6", \
+            "--keep-counts", "--keep-files", "--keep-read-assignments", "--output-unclassified", "--threads", noThreads, \
             "--output-dir", "/geneious"] )
 else:
     sys.exit("No fasta files in " + pathToData)
@@ -40,7 +43,7 @@ if len(inFiles) > 1:
     # Run emu combine-outputs for selected folder - both relative abundance and counts
     combineOutputs = ("emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species")
     subprocess.run( [pathToDocker, "run", "--rm" ,"-v", mountPath, \
-        "emu3.4.4_image", "/bin/bash", "-c", combineOutputs] )
+        emuImage, "/bin/bash", "-c", combineOutputs] )
     # Copy combined output file to Geneious tmp folder
     for file in os.listdir(pathToData):
         if file.endswith("emu-combined-species-counts.tsv"):
