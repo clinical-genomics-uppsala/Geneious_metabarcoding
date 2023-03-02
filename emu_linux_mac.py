@@ -7,7 +7,7 @@ import shutil
 import glob
 
 # Emu options
-emuImage = "emu3.4.4_git" # "emu3.4.4_image" (database included in image)
+emuImage =  "emu:3.4.4" # "emu_git" (database included in image)
 noThreads = "6"
 
 # Outfile to be imported to Geneious

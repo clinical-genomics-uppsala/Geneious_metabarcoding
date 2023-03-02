@@ -18,7 +18,7 @@ The plugin runs an Emu docker container from Geneious. The plugin is adapted to 
 ## Plugin installation
 
 1. Build docker image:
-`docker build -f emu.Dockerfile -t emu3.4.4_image .`
+`docker build -f emu.Dockerfile -t emu:3.4.4 .`
 2. Download and install [Geneious Wrapper Plugin Creator](https://www.geneious.com/api-developers/)
 3. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
