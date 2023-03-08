@@ -7,13 +7,14 @@ import shutil
 import glob
 
 # Emu options
-emuImage =  "emu:3.4.4" # "emu_git" (database included in image)
+emuImage = "emu_git" # "emu:3.4.4" (database included in image)
 noThreads = "6"
 
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
 
-# Temporary Geneious folder. Example: /Users/user/Geneious 2022.1 Data/transient/1660719270002/x/8/
+# Temporary Geneious folder. Example linux: /Users/user/Geneious 2022.1 Data/transient/1660719270002/x/8/
+# Example windows: D:\Geneious 2021.1 Data\transient\1677846391422\x\120
 pathToGeneiousData = sys.argv[4]
 
 pathToDocker = sys.argv[6]
@@ -26,7 +27,7 @@ mountPath = os.path.join(pathToData, ":/geneious")
 inFiles = []
 for file in os.listdir(pathToData):
     if file.endswith(".fasta"):
-        inFiles.append(os.path.join("/geneious",file))
+        inFiles.append("".join(["/geneious/", file])) # Must be linux format also in windows
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:

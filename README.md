@@ -10,7 +10,7 @@ The plugin runs an Emu docker container from Geneious. The plugin is adapted to 
 - output on disk: Emu output for each sample and combined
 
 ## System requirements
-- Mac/linux
+The plugin is adapted to both Windows, Mac and Linux
 - Geneious
 - Python 3
 - Docker
@@ -24,7 +24,11 @@ The plugin runs an Emu docker container from Geneious. The plugin is adapted to 
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
 	- 'Plugin Type:' select 'General Operation'. 
-	- 'Bundled Program Files (optional)': add `emu_linux_mac.py` under 'Linux' or 'Mac OSX' respectively.
+	- 'Bundled Program Files (optional)' add:  
+		`emu.py` under 'Linux' and 'Mac OSX'  
+		`emu.bat` under 'Windows'  
+	- 'Additional Bundled Files (optional)' add: `emu.py`
+
 - Step 2: 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
