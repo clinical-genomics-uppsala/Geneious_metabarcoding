@@ -18,7 +18,10 @@ The plugin is adapted to both Windows, Mac and Linux
 ## Plugin installation
 
 1. Build docker image:
-`docker build -f emu.Dockerfile -t emu:3.4.4 .`
+`docker build -f emu.Dockerfile -t emu:3.4.4 .`  
+Two Docker files are available:
+- emu.Dockerfile: includes quay.io/biocontainers/emu image and standard database
+- emu_git.Dockerfile: includes bug fix in gitlab version of Emu and standard database
 2. Download and install [Geneious Wrapper Plugin Creator](https://www.geneious.com/api-developers/)
 3. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
