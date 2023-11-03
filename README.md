@@ -3,7 +3,7 @@
 Under development
 
 [Geneious](https://www.geneious.com) wrapper plugin to run [Emu](https://gitlab.com/treangenlab/emu) to classify 16S sequences from nanopore amplicon data.
-The plugin runs an Emu docker container from Geneious. The plugin is adapted to run in a workflow where the previous step exports the selected files to a folder selected by the user.
+The plugin runs an Emu docker container from Geneious. The Emu standard database is included in the docker image. The plugin is adapted to run in a workflow where the previous step exports the selected sequence files to a folder selected by the user.
 
 - input: Geneious sequence documents/lists
 - output Geneious: Emu table (counts) combined for all samples, or Emu table for single sample with relative abundance and counts
@@ -18,10 +18,7 @@ The plugin is adapted to both Windows, Mac and Linux
 ## Plugin installation
 
 1. Build docker image:
-`docker build -f emu.Dockerfile -t emu:3.4.4 .`  
-Two Docker files are available:
-- emu.Dockerfile: includes quay.io/biocontainers/emu image and standard database
-- emu_git.Dockerfile: includes bug fix in gitlab version of Emu and standard database
+`docker build -f emu.Dockerfile -t emu:3.4.5 .`
 2. Download and install [Geneious Wrapper Plugin Creator](https://www.geneious.com/api-developers/)
 3. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
