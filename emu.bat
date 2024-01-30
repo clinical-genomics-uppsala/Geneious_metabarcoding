@@ -10,6 +10,6 @@ set pathToData=%8
 set pluginPath=%~dp0
 ::set pluginPath=%10
 
-python "%pluginPath%emu_linux_mac.py" -o %outFile% -g %pathToGeneiousData% -d %pathToDocker% -f %pathToData%
+python "%pluginPath%emu.py" -o %outFile% -g %pathToGeneiousData% -d %pathToDocker% -f %pathToData%
 
 :: -o emu_output.tsv -g [inputFolderName] [otherOptions] -p [pluginPath]
