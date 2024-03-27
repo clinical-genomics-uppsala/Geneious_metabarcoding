@@ -39,7 +39,10 @@ The plugin is adapted to both Windows, Mac and Linux
 	Press 'Add' to add two user options (in this order):   
 	- 'Command Line Switch': pathToDocker, 'Option Label': Docker path  
 	- 'Command Line Switch': pathToData, 'Option Label': Data path  
-	Both 'Command Line Switch' and 'Option Label' should be filled in, but can be modified.
+	- 'Command Line Switch': emuImage, 'Option Label': Docker image  
+	- 'Command Line Switch': noThreads, 'Option Label': Threads
+	
+	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be modified.
 
 ## Workflow
 `Emu.geneiousWorkflow`

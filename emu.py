@@ -6,10 +6,6 @@ import subprocess
 import shutil
 import glob
 
-# Emu options
-emuImage = "emu:3.4.5" # database included in image
-noThreads = "6"
-
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
 
@@ -22,6 +18,11 @@ pathToDocker = sys.argv[6]
 # In/out data folder selected by user
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
+
+# Emu options
+emuImage = sys.argv[10] # database included in image
+noThreads = sys.argv[12]
+
 
 # List of fasta files in data folder
 inFiles = []
