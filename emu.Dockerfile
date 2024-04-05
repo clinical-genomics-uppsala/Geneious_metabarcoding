@@ -6,8 +6,9 @@ MAINTAINER "Ida Karlsson" ida.karlsson@scilifelab.uu.se
 # Set workdir
 WORKDIR /
 
-# Python packages (osfclient)
+# Python packages (osfclient & excel report dependencies)
 COPY requirements.txt .
+COPY emu_report.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
