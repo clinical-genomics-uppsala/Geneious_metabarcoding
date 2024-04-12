@@ -1,26 +1,70 @@
+# Geneious workflow for classification of nanopore metabarcoding data
+
+[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [Emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences.
+
+- input: fastq files
+
+## System requirements
+The workflow is tested on Windows and Mac, but may work on Linux.
+- Geneious
+- Python 3
+- Docker
+- [Geneious Wrapper Plugin Creator](https://www.geneious.com/api-developers/)
+- Geneious BBDuk plugin
+
+&nbsp;
+&nbsp;
+
+# Geneious workflow
+
+## Geneious files needed
+    16SPrimers.geneious
+    16S_nanopore_pre-processing.geneiousWorkflow
+    16S_nanopore_pre-processing_Emu.geneiousWorkflow
+	emu_wrapper.gplugin (or install from source see below)
+
+## Setup workflows
+1. Create BBDuk_match_primers wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
+- Step 1: 
+	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
+	- 'Plugin Type:' select 'General Operation'.
+	- 'Bundled Program Files (optional)' add:  
+		path to powershell for example `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe` under 'Windows'
+		nothing under 'Mac OSX' or 'Linux'   
+- Step 2: 
+	- 'Sequence Type:' select 'Nucleotide only'.
+	- 'Document Type:' select 'Unaligned Sequences (1+)'.
+	- 'Format:' select 'FastQ (Sanger scores)'.
+	- 'Command Line' (for Mac):  
+		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
+	- 'Command Line' (example for Windows):  
+	`C:\Program`` Files\Geneious`` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program`` Files\Geneious`` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
+	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' 
+- Step 3:
+	Press 'OK'
+2. Import `16S_nanopore_pre-processing.geneiousWorkflow`
+	- Add the BBDuk_match_primers plugin to the corresponding step. For Mac: under the option 'BBDuk_match_primers Program File' add the path to BBDuk plugin for example `/Users/xxxxx/bbmap/bbduk.sh`
+	- Edit the two BBDuk steps. One step to trim primers from left end (27F and 1492R) and one for right end (27F_rev and 1492R_rev).
+3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
+	- Add the `16S_nanopore_pre-processing.geneiousWorkflow`workflow to the corresponding step.
+	- Add the Emu wrapper plugin to the corresponding step.
+
+&nbsp;
+&nbsp;
+
 # Geneious wrapper plugin for Emu
 
-Under development
-
-[Geneious](https://www.geneious.com) wrapper plugin to run [Emu](https://gitlab.com/treangenlab/emu) to classify 16S sequences from nanopore amplicon data.
 The plugin runs an Emu docker container from Geneious. The Emu standard database is included in the docker image. The plugin is adapted to run in a workflow where the previous step exports the selected sequence files to a folder selected by the user.
 
 - input: Geneious sequence documents/lists
 - output Geneious: Emu table (counts) combined for all samples, or Emu table for single sample with relative abundance and counts
 - output on disk: Emu output for each sample and combined
 
-## System requirements
-The plugin is adapted to both Windows, Mac and Linux
-- Geneious
-- Python 3
-- Docker
-
 ## Plugin installation
 
 1. Build docker image:
 `docker build -f emu.Dockerfile -t emu:3.4.5 .`
-2. Download and install [Geneious Wrapper Plugin Creator](https://www.geneious.com/api-developers/)
-3. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
+2. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
 	- 'Plugin Type:' select 'General Operation'. 
@@ -43,6 +87,3 @@ The plugin is adapted to both Windows, Mac and Linux
 	- 'Command Line Switch': noThreads, 'Option Label': Threads
 	
 	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be modified.
-
-## Workflow
-`Emu.geneiousWorkflow`
