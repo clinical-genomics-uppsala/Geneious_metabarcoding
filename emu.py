@@ -61,6 +61,22 @@ else:
 
 
 # Krona plot
+kronaCmd = (
+    "ktImportTaxonomy -t 1 -m 14 -o /geneious/krona.html /geneious/*_rel-abundance.tsv"
+)
+subprocess.run(
+    [
+        pathToDocker,
+        "run",
+        "--rm",
+        "-v",
+        mountPath,
+        "krona:2.8",
+        "/bin/bash",
+        "-c",
+        kronaCmd,
+    ]
+)
 
 # Combine output and import in Geneious
 if len(inFiles) > 1:
