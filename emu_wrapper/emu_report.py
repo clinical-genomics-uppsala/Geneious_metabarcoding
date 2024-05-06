@@ -6,9 +6,7 @@ import glob
 
 import pandas as pd
 import numpy as np
-
 import xlsxwriter
-
 import pandas.io.formats.excel
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None
@@ -42,11 +40,7 @@ def sort_samples(df, sortabund):
     # sort sample columns by name, not taxonomy
     samples = np.sort(df.columns.difference(taxonomy)).tolist()
     # remove columns with threshold - duplicates
-    samples = [
-        sample
-        for sample in samples
-        if "threshold" not in sample
-    ]
+    samples = [sample for sample in samples if "threshold" not in sample]
 
     df = df.loc[:, taxonomy + samples].set_index(taxonomy)  # taxonomy as index columns
 

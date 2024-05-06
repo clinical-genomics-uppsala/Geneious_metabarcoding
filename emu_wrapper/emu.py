@@ -79,59 +79,45 @@ subprocess.run(
 )
 
 # Combine output and import in Geneious
-if len(inFiles) > 1:
-    # Run emu combine-outputs for selected folder - both relative abundance and counts
-    combineOutputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
-    subprocess.run(
-        [
-            pathToDocker,
-            "run",
-            "--rm",
-            "-v",
-            mountPath,
-            emuImage,
-            "/bin/bash",
-            "-c",
-            combineOutputs,
-        ]
-    )
-
-    # Excel report
-    makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx"
-    subprocess.run(
-        [
-            pathToDocker,
-            "run",
-            "--rm",
-            "-v",
-            mountPath,
-            emuImage,
-            "/bin/bash",
-            "-c",
-            makeReport,
-        ]
-    )
-
-    # Copy combined output file to Geneious tmp folder
-    for file in os.listdir(pathToData):
-        if file.endswith("emu-combined-species-counts.tsv"):
-            multiSampleOutput = file
-
-            shutil.copyfile(
-                os.path.join(pathToData, multiSampleOutput),
-                os.path.join(pathToGeneiousData, outFile),
-            )
+# Run emu combine-outputs for selected folder - both relative abundance and counts
+combineOutputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
+subprocess.run(
+    [
+        pathToDocker,
+        "run",
+        "--rm",
+        "-v",
+        mountPath,
+        emuImage,
+        "/bin/bash",
+        "-c",
+        combineOutputs,
+    ]
+)
 
 
-# For single samples
-elif len(inFiles) == 1:
-    # Excel report for one file
+# Excel report
+makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx"
+subprocess.run(
+    [
+        pathToDocker,
+        "run",
+        "--rm",
+        "-v",
+        mountPath,
+        emuImage,
+        "/bin/bash",
+        "-c",
+        makeReport,
+    ]
+)
 
-    # Copy single output file to Geneious tmp folder
-    for file in os.listdir(pathToData):
-        if file.endswith("_rel-abundance.tsv"):
-            oneSampleOutput = file
-            shutil.copyfile(
-                os.path.join(pathToData, oneSampleOutput),
-                os.path.join(pathToGeneiousData, outFile),
-            )
+# Copy combined output file to Geneious tmp folder
+for file in os.listdir(pathToData):
+    if file.endswith("emu-combined-species-counts.tsv"):
+        multiSampleOutput = file
+
+        shutil.copyfile(
+            os.path.join(pathToData, multiSampleOutput),
+            os.path.join(pathToGeneiousData, outFile),
+        )
