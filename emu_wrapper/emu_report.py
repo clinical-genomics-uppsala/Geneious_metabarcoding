@@ -39,9 +39,14 @@ def sort_samples(df, sortabund):
         if not name.startswith("barcode")
     ]
 
-    samples = np.sort(df.columns.difference(taxonomy)).tolist()
     # sort sample columns by name, not taxonomy
-    # can be shortened by using set_index instead if samples are never used
+    samples = np.sort(df.columns.difference(taxonomy)).tolist()
+    # remove columns with threshold - duplicates
+    samples = [
+        sample
+        for sample in samples
+        if "threshold" not in sample
+    ]
 
     df = df.loc[:, taxonomy + samples].set_index(taxonomy)  # taxonomy as index columns
 
