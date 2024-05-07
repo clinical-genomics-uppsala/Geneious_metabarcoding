@@ -23,14 +23,12 @@ mountPath = os.path.join(pathToData, ":/geneious")
 emuImage = sys.argv[10]  # database included in image
 noThreads = sys.argv[12]
 
-
 # List of fasta files in data folder
-inFiles = []
-for file in os.listdir(pathToData):
-    if file.endswith(".fasta"):
-        inFiles.append(
-            "".join(["/geneious/", file])
-        )  # Must be linux format also in windows
+inFiles = [
+    "".join(["/geneious/", file]) # Must be linux format also in windows
+    for file in os.listdir(pathToData)
+    if file.endswith(".fasta")
+]
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:

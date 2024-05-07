@@ -25,7 +25,6 @@ else:
 
 ##### READING #####
 
-
 # Sort dataframe by sample columns and most abundant taxa
 # Sample names should start with barcode no: 01, 02, 03..... or with barcode49, barcode27 etc.
 def sort_samples(df, sortabund):
@@ -34,7 +33,7 @@ def sort_samples(df, sortabund):
         name
         for name in header
         if not name[0].isdigit()
-        if not name.startswith("barcode")
+        if not "barcode" in name
     ]
 
     # sort sample columns by name, not taxonomy
@@ -75,6 +74,8 @@ ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abun
 df3 = ra_data
 
 # QC sheet
+# get all fasta files filenames + no seqs
+
 df1 = pd.DataFrame(count_header, columns=["Sample"])
 
 
