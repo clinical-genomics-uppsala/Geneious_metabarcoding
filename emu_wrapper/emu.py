@@ -5,6 +5,7 @@ import os
 import subprocess
 import shutil
 import glob
+import csv
 
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
@@ -23,12 +24,28 @@ mountPath = os.path.join(pathToData, ":/geneious")
 emuImage = sys.argv[10]  # database included in image
 noThreads = sys.argv[12]
 
-# List of fasta files in data folder
-inFiles = [
-    "".join(["/geneious/", file]) # Must be linux format also in windows
-    for file in os.listdir(pathToData)
-    if file.endswith(".fasta")
-]
+
+def count_fasta(fastafile):
+    no_fasta = len([1 for line in open(fastafile) if line.startswith(">")])
+    return no_fasta
+
+
+# List of fasta files in data folder, create csv
+inFiles = []
+for file in os.listdir(pathToData):
+    if file.endswith(".fasta"):
+        inFiles.append(
+            "".join(["/geneious/", file])
+        )  # Must be linux format also in windows
+
+        # Create CSV file with number of reads per fasta-file
+        with open(os.path.join(pathToData, "fasta.csv"), "a", newline="") as csvfile:
+            rowToWrite = [
+                file.strip(".fasta"),
+                count_fasta(os.path.join(pathToData, file)),
+            ]
+            writer = csv.writer(csvfile)
+            writer.writerow(rowToWrite)
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:
@@ -95,7 +112,7 @@ subprocess.run(
 
 
 # Excel report
-makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx"
+makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv)"
 subprocess.run(
     [
         pathToDocker,

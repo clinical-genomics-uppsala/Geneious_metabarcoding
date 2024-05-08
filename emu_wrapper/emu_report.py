@@ -17,23 +17,23 @@ if len(sys.argv) >= 3:
     count_file = sys.argv[1]
     ra_file = sys.argv[2]
     output_excel = sys.argv[3]
+    csv_file = sys.argv[4]
 else:
     count_file = "data/emu-combined-species-counts.tsv"
     ra_file = "data/emu-combined-species.tsv"
     output_excel = "data/emu.xlsx"
+    csv_file = "data/fasta.csv"
 
 
 ##### READING #####
+
 
 # Sort dataframe by sample columns and most abundant taxa
 # Sample names should start with barcode no: 01, 02, 03..... or with barcode49, barcode27 etc.
 def sort_samples(df, sortabund):
     header = df.columns.values.tolist()
     taxonomy = [
-        name
-        for name in header
-        if not name[0].isdigit()
-        if not "barcode" in name
+        name for name in header if not name[0].isdigit() if not "barcode" in name
     ]
 
     # sort sample columns by name, not taxonomy
@@ -53,16 +53,25 @@ def sort_samples(df, sortabund):
             .sort_values(by="sum", ascending=False)
             .drop(["sum"], axis=1)
         )
+
+        # For qc sheet - number of assigned/unassigned reads per samples
+        qc = df.sum(axis=0, numeric_only=True)
+        qc = pd.DataFrame(qc, columns=["#assigned"])
+        qc["#unassigned"] = unassigned
+
         df = df.append(
             unassigned
         )  # The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
 
-    return df
+        return (df, qc)
+
+    else:
+        return df
 
 
 # COUNTS EMU - tsv
 count_data = pd.read_csv(count_file, sep="\t", header=0)
-count_data = sort_samples(count_data, "yes")
+count_data, qc = sort_samples(count_data, "yes")
 count_header = count_data.columns.values.tolist()
 df2 = count_data
 
@@ -73,15 +82,24 @@ ra_header = ra_data.columns.values.tolist()
 ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abundance)
 df3 = ra_data
 
-# QC sheet
-# get all fasta files filenames + no seqs
-
-df1 = pd.DataFrame(count_header, columns=["Sample"])
+# QC SHEET
+# CSV file with information from fasta files
+qc_csv = pd.read_csv(
+    csv_file,
+    sep=",",
+    index_col=0,
+    names=["#filtered"],
+)
+# Assigned/unassigned from count sheet
+qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
+qc_csv["prop_assigned"] = (qc_csv["#assigned"] / qc_csv["#filtered"])
+qc_csv["report_date"] = pd.Timestamp.today()
+df1 = qc_csv
 
 
 ##### WRITING TO EXCEL FILE #####
 writer = pd.ExcelWriter(output_excel)
-df1.to_excel(writer, sheet_name="qc", index=False)
+df1.to_excel(writer, sheet_name="qc", index=True)
 df2.to_excel(writer, sheet_name="emu_counts", index=True)
 df3.to_excel(writer, sheet_name="emu_proportions", index=True)
 
