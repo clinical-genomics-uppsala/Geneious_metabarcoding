@@ -18,11 +18,13 @@ if len(sys.argv) >= 3:
     ra_file = sys.argv[2]
     output_excel = sys.argv[3]
     csv_file = sys.argv[4]
+    version_file = sys.argv[5]
 else:
     count_file = "data/emu-combined-species-counts.tsv"
     ra_file = "data/emu-combined-species.tsv"
     output_excel = "data/emu.xlsx"
     csv_file = "data/fasta.csv"
+    version_file = "data/versions.csv"
 
 
 ##### READING #####
@@ -84,21 +86,23 @@ df3 = ra_data
 
 # QC SHEET
 # CSV file with information from fasta files
-qc_csv = pd.read_csv(
-    csv_file,
-    sep=",",
-    index_col=0,
-    names=["#filtered"],
-)
+qc_csv = pd.read_csv(csv_file, sep=",", index_col=0, names=["#filtered"])
 # Assigned/unassigned from count sheet
 qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
-qc_csv["prop_assigned"] = (qc_csv["#assigned"] / qc_csv["#filtered"])
+qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
+# Report date
 qc_csv["report_date"] = pd.Timestamp.today()
+# Software versions
+versions_csv = pd.read_csv(version_file, sep=",", header=None)
+versions_csv = dict(versions_csv.to_numpy())
+for software, version in versions_csv.items():
+    qc_csv[software] = version
 df1 = qc_csv
 
 
 ##### WRITING TO EXCEL FILE #####
 writer = pd.ExcelWriter(output_excel)
+
 df1.to_excel(writer, sheet_name="qc", index=True)
 df2.to_excel(writer, sheet_name="emu_counts", index=True)
 df3.to_excel(writer, sheet_name="emu_proportions", index=True)
@@ -106,7 +110,7 @@ df3.to_excel(writer, sheet_name="emu_proportions", index=True)
 workbook = writer.book
 
 
-##### FORMATTING #####
+##### FORMATTING ####
 # Left-adjust cells
 align_cells = workbook.add_format()
 align_cells.set_align("left")

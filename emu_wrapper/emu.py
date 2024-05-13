@@ -24,6 +24,8 @@ mountPath = os.path.join(pathToData, ":/geneious")
 emuImage = sys.argv[10]  # database included in image
 noThreads = sys.argv[12]
 
+kronaImage = "krona:2024-05-13"
+
 
 def count_fasta(fastafile):
     no_fasta = len([1 for line in open(fastafile) if line.startswith(">")])
@@ -46,6 +48,36 @@ for file in os.listdir(pathToData):
             ]
             writer = csv.writer(csvfile)
             writer.writerow(rowToWrite)
+
+# Create CSV for software versions
+with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    emuVersion = subprocess.run(
+        [
+            pathToDocker,
+            "inspect",
+            "--format",
+            "'{{ index .Config.Labels \"version\"}}'",
+            emuImage,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    kronaVersion = subprocess.run(
+        [
+            pathToDocker,
+            "inspect",
+            "--format",
+            "'{{ index .Config.Labels \"version\"}}'",
+            kronaImage,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    writer.writerow(["emu_image", emuImage])
+    writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
+    writer.writerow(["krona_image", kronaImage])
+    writer.writerow(["krona_version", kronaVersion.stdout.replace("'", "").strip()])
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:
@@ -86,7 +118,7 @@ subprocess.run(
         "--rm",
         "-v",
         mountPath,
-        "krona:2.8",
+        kronaImage,
         "/bin/bash",
         "-c",
         kronaCmd,
@@ -112,7 +144,7 @@ subprocess.run(
 
 
 # Excel report
-makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv)"
+makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
 subprocess.run(
     [
         pathToDocker,

@@ -1,6 +1,7 @@
 FROM --platform=linux/amd64 quay.io/biocontainers/emu:3.4.5--hdfd78af_0
 
-LABEL description = "Emu image with standard database 3.4.5"
+LABEL description = "Emu image with standard database"
+LABEL version="3.4.5"
 MAINTAINER "Ida Karlsson" ida.karlsson@scilifelab.uu.se
 
 # Set workdir
