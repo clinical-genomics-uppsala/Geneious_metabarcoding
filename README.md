@@ -3,7 +3,7 @@
 [Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [Emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences using the emu standard database. Post-processing includes Krona plots and a report in excel format.
 
 input: fastq files   
-main outputs: [Krona plots](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/Krona.html) and [Excel report](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/emu.xlsx) for each run.
+main outputs: [Krona plots](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/krona.html) and [Excel report](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/emu.xlsx) for each run.
 
 ## System requirements
 The workflow is tested on Windows and Mac, but may work on Linux.
