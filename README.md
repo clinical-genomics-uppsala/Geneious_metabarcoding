@@ -1,8 +1,9 @@
 # Geneious workflow for classification of nanopore metabarcoding data
 
-[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [Emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences.
+[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [Emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences using the emu standard database. Post-processing includes Krona plots and a report in excel format.
 
-- input: fastq files
+input: fastq files   
+main outputs: [Krona plots](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/Krona.html) and [Excel report](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/emu.xlsx) for each run.
 
 ## System requirements
 The workflow is tested on Windows and Mac, but may work on Linux.
@@ -15,15 +16,19 @@ The workflow is tested on Windows and Mac, but may work on Linux.
 &nbsp;
 &nbsp;
 
-# Geneious workflow
+# Installation
 
-## Geneious files needed
-    16SPrimers.geneious
-    16S_nanopore_pre-processing.geneiousWorkflow
-    16S_nanopore_pre-processing_Emu.geneiousWorkflow
-	emu_wrapper.gplugin (or install from source see below)
+## Build docker images for emu and Krona  
+`docker build -f emu_wrapper/emu.Dockerfile -t emu:2024-05-13 .`  
+`docker build -f emu_wrapper/krona.Dockerfile -t krona:2024-05-13 .`
 
-## Setup workflows
+Transfer docker image to another computer  
+`docker save -o path/to/emu2024-05-13.tar emu:2024-05-13`  
+`docker load -i path/to/emu2024-05-13.tar`  
+
+
+## Setup Geneious wrapper plugins
+
 1. Create BBDuk_match_primers wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
@@ -42,28 +47,9 @@ The workflow is tested on Windows and Mac, but may work on Linux.
 	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' 
 - Step 3:
 	Press 'OK'
-2. Import `16S_nanopore_pre-processing.geneiousWorkflow`
-	- Add the BBDuk_match_primers plugin to the corresponding step. For Mac: under the option 'BBDuk_match_primers Program File' add the path to BBDuk plugin for example `/Users/xxxxx/bbmap/bbduk.sh`
-	- Edit the two BBDuk steps. One step to trim primers from left end (27F and 1492R) and one for right end (27F_rev and 1492R_rev).
-3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
-	- Add the `16S_nanopore_pre-processing.geneiousWorkflow`workflow to the corresponding step.
-	- Add the Emu wrapper plugin to the corresponding step.
 
 &nbsp;
-&nbsp;
 
-# Geneious wrapper plugin for Emu
-
-The plugin runs an Emu docker container from Geneious. The Emu standard database is included in the docker image. The plugin is adapted to run in a workflow where the previous step exports the selected sequence files to a folder selected by the user.
-
-- input: Geneious sequence documents/lists
-- output Geneious: Emu table (counts) combined for all samples, or Emu table for single sample with relative abundance and counts
-- output on disk: Emu output for each sample and combined
-
-## Plugin installation
-
-1. Build docker image:
-`docker build -f emu.Dockerfile -t emu:3.4.5 .`
 2. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
@@ -72,7 +58,6 @@ The plugin runs an Emu docker container from Geneious. The Emu standard database
 		`emu.py` under 'Linux' and 'Mac OSX'  
 		`emu.bat` under 'Windows'  
 	- 'Additional Bundled Files (optional)' add: `emu.py`
-
 - Step 2: 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
@@ -87,3 +72,21 @@ The plugin runs an Emu docker container from Geneious. The Emu standard database
 	- 'Command Line Switch': noThreads, 'Option Label': Threads
 	
 	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be modified.
+
+&nbsp;
+
+## Setup Geneious workflows
+1. Import `16SPrimers.geneious` (or add your own primers)
+2. Import `16S_nanopore_pre-processing.geneiousWorkflow`
+	- Add the BBDuk_match_primers plugin to the corresponding step. For Mac: under the option 'BBDuk_match_primers Program File' add the path to BBDuk plugin for example `/Users/xxxxx/bbmap/bbduk.sh`
+	- Edit the two BBDuk steps. One step to trim primers from left end (27F and 1492R) and one for right end (27F_rev and 1492R_rev).
+3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
+	- Add the `16S_nanopore_pre-processing.geneiousWorkflow` workflow to the corresponding step.
+	- Add the Emu wrapper plugin to the corresponding step.
+
+&nbsp;
+&nbsp;
+
+# Running the workflow
+
+Import the fastq files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'. Add the path to docker on your system, the name of the docker image, and the number of threads. 'Export to Folder' and 'Data path' must point to the same folder which should not contain any fasta files already. In Geneious, the output will be a frequency table (counts) combined for all samples, or for a single sample, a table with both relative abundance and counts. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
