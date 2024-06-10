@@ -21,11 +21,11 @@ pathToDocker = sys.argv[6]
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
 
+# Krona
+kronaImage = sys.argv[10]
 # Emu options
-emuImage = sys.argv[10]  # database included in image
-noThreads = sys.argv[12]
-
-kronaImage = "krona:2024-05-13"
+emuImage = sys.argv[12]  # database included in image
+noThreads = sys.argv[14]
 
 
 def count_fasta(fastafile):
