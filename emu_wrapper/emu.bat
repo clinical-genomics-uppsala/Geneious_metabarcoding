@@ -12,9 +12,12 @@ shift
 shift
 shift
 shift
+shift
+shift
+set kronaImage=%4
 set emuImage=%6
 set noThreads=%8
 
-python "%pluginPath%emu.py" -o %outFile% -g %pathToGeneiousData% -d %pathToDocker% -f %pathToData% -i %emuImage% -t %noThreads%
+python "%pluginPath%emu.py" -o %outFile% -g %pathToGeneiousData% -d %pathToDocker% -f %pathToData% -k %kronaImage% -i %emuImage% -t %noThreads%
 
 :: -o emu_output.tsv -g [inputFolderName] [otherOptions]

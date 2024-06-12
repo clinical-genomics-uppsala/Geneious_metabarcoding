@@ -74,15 +74,13 @@ def sort_samples(df, sortabund):
 # COUNTS EMU - tsv
 count_data = pd.read_csv(count_file, sep="\t", header=0)
 count_data, qc = sort_samples(count_data, "yes")
-count_header = count_data.columns.values.tolist()
-df2 = count_data
+count_data.columns = count_data.columns.str.rsplit(".", 1).str[0].str.strip() # remove .fasta/.fastq
 
 # RELATIVE ABUNDANCE EMU - tsv
 ra_data = pd.read_csv(ra_file, sep="\t", header=0)
 ra_data = sort_samples(ra_data, "no")
-ra_header = ra_data.columns.values.tolist()
+ra_data.columns = ra_data.columns.str.rsplit(".", 1).str[0].str.strip()
 ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abundance)
-df3 = ra_data
 
 # QC SHEET
 # CSV file with information from fasta files
@@ -97,15 +95,15 @@ versions_csv = pd.read_csv(version_file, sep=",", header=None)
 versions_csv = dict(versions_csv.to_numpy())
 for software, version in versions_csv.items():
     qc_csv[software] = version
-df1 = qc_csv
+qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
 
 
 ##### WRITING TO EXCEL FILE #####
 writer = pd.ExcelWriter(output_excel)
 
-df1.to_excel(writer, sheet_name="qc", index=True)
-df2.to_excel(writer, sheet_name="emu_counts", index=True)
-df3.to_excel(writer, sheet_name="emu_proportions", index=True)
+qc_csv.to_excel(writer, sheet_name="qc", index=True)
+count_data.to_excel(writer, sheet_name="emu_counts", index=True)
+ra_data.to_excel(writer, sheet_name="emu_proportions", index=True)
 
 workbook = writer.book
 

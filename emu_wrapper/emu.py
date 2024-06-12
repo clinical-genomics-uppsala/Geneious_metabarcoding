@@ -6,6 +6,7 @@ import subprocess
 import shutil
 import glob
 import csv
+import gzip
 
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
@@ -20,22 +21,27 @@ pathToDocker = sys.argv[6]
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
 
+# Krona
+kronaImage = sys.argv[10]
 # Emu options
-emuImage = sys.argv[10]  # database included in image
-noThreads = sys.argv[12]
-
-kronaImage = "krona:2024-05-13"
+emuImage = sys.argv[12]  # database included in image
+noThreads = sys.argv[14]
 
 
 def count_fasta(fastafile):
-    no_fasta = len([1 for line in open(fastafile) if line.startswith(">")])
+    if fastafile.endswith(".gz"):
+        with gzip.open(fastafile, "rt") as file:
+            no_fasta = sum(1 for line in file.read() if line.startswith(">"))
+    else:
+        with open(fastafile, "r") as file:
+            no_fasta = sum(1 for line in file if line.startswith(">"))
     return no_fasta
 
 
 # List of fasta files in data folder, create csv
 inFiles = []
 for file in os.listdir(pathToData):
-    if file.endswith(".fasta"):
+    if file.endswith((".fasta", ".fa", ".fasta.gz", ".fa.gz")):
         inFiles.append(
             "".join(["/geneious/", file])
         )  # Must be linux format also in windows
@@ -43,7 +49,7 @@ for file in os.listdir(pathToData):
         # Create CSV file with number of reads per fasta-file
         with open(os.path.join(pathToData, "fasta.csv"), "a", newline="") as csvfile:
             rowToWrite = [
-                file.strip(".fasta"),
+                file.rsplit(".", 1)[0],  # split on last . match emu behaviour = .gz files get .fasta/.fastq in headers
                 count_fasta(os.path.join(pathToData, file)),
             ]
             writer = csv.writer(csvfile)
@@ -104,7 +110,7 @@ if len(inFiles) > 0:
             ]
         )
 else:
-    sys.exit("No fasta files in " + pathToData)
+    sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
 
 # Krona plot
