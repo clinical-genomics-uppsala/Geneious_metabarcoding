@@ -1,14 +1,14 @@
 <geneiousWorkflows>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing + Emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="bd3470c5-d627-4630-af2a-ad3cfa395b8b" revisionNumber="35" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. For Emu, selected documents are exported to disk from where Emu is run. 'Export to folder' and 'Data path' must be the same. &lt;/html&gt;" bundledIconName="plugin">
-    <workflowElement id="16S nanopore_ pre-processing_213a4c79-5773-4cfd-862a-369a76dd3731" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing + Emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="9a60debf-83a7-440e-be3f-7ff2938fe113" revisionNumber="36" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. For Emu, selected documents are exported to disk from where Emu is run. 'Export to folder' and 'Data path' must be the same. &lt;/html&gt;" bundledIconName="plugin">
+    <workflowElement id="16S nanopore_ pre-processing_e420c7c8-fb27-4e32-b950-ed0dfe17522e" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options />
     </workflowElement>
     <workflowElement id="BatchExport" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
-        <option name="fileFormat">fasta</option>
+        <option name="fileFormat">fastaCompressed</option>
         <option name="optionsButton">Options</option>
         <option name="folder" extra="/Users/user/Documents/emu,">{DEFAULT_LOCATION}</option>
-        <option name="extension">.fasta</option>
+        <option name="extension">.fasta.gz</option>
         <option name="exportOptionsXml">&lt;fasta&gt;&#xD;
   &lt;option name="wrap"&gt;false&lt;/option&gt;&#xD;
   &lt;option name="replaceSpacesInNameWithUnderscore"&gt;false&lt;/option&gt;&#xD;
@@ -58,51 +58,8 @@
       </options>
     </workflowElement>
   </XMLSerialisableRootElement>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="213a4c79-5773-4cfd-862a-369a76dd3731" revisionNumber="105" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;/html&gt;" bundledIconName="plugin">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="e420c7c8-fb27-4e32-b950-ed0dfe17522e" revisionNumber="110" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;/html&gt;" bundledIconName="plugin">
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementForEach" />
-    <workflowElement id="batchRename" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
-      <Options>
-        <option name="advancedCheckbox">true</option>
-        <option name="customComponent1"></option>
-        <childOption name="renameMethodChildOptions">
-          <option name="selectedRenameMethod">renamableOption2</option>
-          <childOption name="BatchRenameSubOptions0">
-            <option name="attributeProcedure">nameProcedure</option>
-            <option name="startBatchIndexOption">0</option>
-            <option name="endBatchIndexInclusiveOption">2147483647</option>
-            <option name="sequencesInSequenceListDocumentRenamableSequenceType">allSequencesInListOption</option>
-          </childOption>
-          <childOption name="BatchRenameSubOptions1">
-            <option name="attributeProcedure">nameProcedure</option>
-            <option name="followAndRenameReferences">true</option>
-          </childOption>
-          <childOption name="BatchRenameSubOptions2">
-            <option name="selectedFieldComboOption">fieldOptioncache_name</option>
-          </childOption>
-        </childOption>
-        <childOption name="basicSuperOptions">
-          <option name="task">replaceWithRadioButton</option>
-          <option name="r1">fieldOptioncache_name</option>
-          <option name="rSep"></option>
-          <option name="r2">nothingSelectedOption</option>
-          <option name="rSep2"></option>
-          <option name="r3">nothingSelectedOption</option>
-          <option name="appendTextField"></option>
-          <option name="appendPositionComboBox">endValue</option>
-          <option name="removeHowMuchIntegerOption">1</option>
-          <option name="removePositionComboBox">endValue</option>
-        </childOption>
-        <childOption name="advancedSuperOptions">
-          <option name="replaceWhatTypeRadioOption">matchesOption</option>
-          <option name="replaceWhatTextField">\s*</option>
-          <option name="ignoreCaseCheckbox">true</option>
-          <option name="isRegexCheckbox">true</option>
-          <option name="replaceWithTextField">_</option>
-          <option name="plusButton">Add Property...</option>
-        </childOption>
-      </Options>
-      <optionToExpose optionName="advancedCheckbox" label="" />
-    </workflowElement>
     <workflowElement id="FilterOperation" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="true" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <option name="filterWhat">eachSequence</option>
@@ -151,6 +108,11 @@
             <option name="condition">greater_than</option>
             <option name="value">1</option>
           </value>
+          <value>
+            <option name="field">filterDocumentTypeField</option>
+            <option name="condition">contains</option>
+            <option name="value">List</option>
+          </value>
         </multiOption>
       </Options>
       <optionToExpose optionName="filterWhat" label="" />
@@ -158,7 +120,7 @@
     <workflowElement id="BBDuk" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="true" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <option name="trimAdapters">true</option>
-        <option name="qualityTrim">false</option>
+        <option name="qualityTrim">true</option>
         <option name="trimPairedOverlap">false</option>
         <option name="trimLowEntropy">false</option>
         <option name="discardShortReads">false</option>
