@@ -43,7 +43,7 @@ Transfer docker image to another computer
 	- 'Command Line' (for Mac):  
 		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
 	- 'Command Line' (example for Windows):  
-	`C:\Program`` Files\Geneious`` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program`` Files\Geneious`` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
+	`C:\Program`` Files\Geneious`` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program`` Files\Geneious`` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t`
 	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' 
 - Step 3:
 	Press 'OK'
@@ -68,7 +68,8 @@ Transfer docker image to another computer
 	Press 'Add' to add two user options (in this order):   
 	- 'Command Line Switch': pathToDocker, 'Option Label': Docker path  
 	- 'Command Line Switch': pathToData, 'Option Label': Data path  
-	- 'Command Line Switch': emuImage, 'Option Label': Docker image  
+	- 'Command Line Switch': kronaImage, 'Option Label': Krona docker image 
+	- 'Command Line Switch': emuImage, 'Option Label': Emu docker image  
 	- 'Command Line Switch': noThreads, 'Option Label': Threads
 	
 	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be modified.
@@ -89,4 +90,7 @@ Transfer docker image to another computer
 
 # Running the workflow
 
-Import the fastq files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'. Add the path to docker on your system, the name of the docker image, and the number of threads. 'Export to Folder' and 'Data path' must point to the same folder which should not contain any fasta files already. In Geneious, the output will be a frequency table (counts) combined for all samples, or for a single sample, a table with both relative abundance and counts. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
+Import the fastq files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.  
+Example of how to fill in the options:  
+![Options when starting the workflow](images/startWorkflow.png?raw=true)  
+Add the path to docker on your system, the names of the docker images, and the number of threads to be used. 'Export to Folder' and 'Data path' must point to the same folder which should not contain any fasta files already. In Geneious, the output will be a frequency table (counts) combined for all samples, or for a single sample, a table with both relative abundance and counts. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
