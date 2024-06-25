@@ -84,6 +84,9 @@ Transfer docker image to another computer
 3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
 	- Add the `16S_nanopore_pre-processing.geneiousWorkflow` workflow to the corresponding step.
 	- Add the Emu wrapper plugin to the corresponding step.
+	- Edit the options for the Emu wrapper plugin. Add the path to docker on your system, the names of the docker images, and the number of threads to be used.  
+	
+	![Options for the Emu plugin](images/workflowOptions.png?raw=true)  
 
 &nbsp;
 &nbsp;
@@ -91,6 +94,5 @@ Transfer docker image to another computer
 # Running the workflow
 
 Import the fastq files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.  
-Example of how to fill in the options:  
 ![Options when starting the workflow](images/startWorkflow.png?raw=true)  
-Add the path to docker on your system, the names of the docker images, and the number of threads to be used. 'Export to Folder' and 'Data path' must point to the same folder which should not contain any fasta files already. In Geneious, the output will be a frequency table (counts) combined for all samples, or for a single sample, a table with both relative abundance and counts. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
+ 'Export to Folder' and 'Data path' must point to the same folder which should not contain any fasta files already. In Geneious, the output will be a frequency table (counts) combined for all samples, or for a single sample, a table with both relative abundance and counts. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
