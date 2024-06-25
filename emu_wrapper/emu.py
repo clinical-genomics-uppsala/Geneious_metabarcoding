@@ -21,11 +21,13 @@ pathToDocker = sys.argv[6]
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
 
+# Github version
+gitVersion = sys.argv[10]
 # Krona
-kronaImage = sys.argv[10]
+kronaImage = sys.argv[12]
 # Emu options
-emuImage = sys.argv[12]  # database included in image
-noThreads = sys.argv[14]
+emuImage = sys.argv[14]  # database included in image
+noThreads = sys.argv[16]
 
 
 def count_fasta(fastafile):
@@ -80,6 +82,7 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
         capture_output=True,
         text=True,
     )
+    writer.writerow(["github_version", gitVersion])
     writer.writerow(["emu_image", emuImage])
     writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
     writer.writerow(["krona_image", kronaImage])
