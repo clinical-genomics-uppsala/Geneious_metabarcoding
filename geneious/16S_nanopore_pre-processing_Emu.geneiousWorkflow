@@ -1,6 +1,6 @@
 <geneiousWorkflows>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing + Emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="9a60debf-83a7-440e-be3f-7ff2938fe113" revisionNumber="36" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. For Emu, selected documents are exported to disk from where Emu is run. 'Export to folder' and 'Data path' must be the same. &lt;/html&gt;" bundledIconName="plugin">
-    <workflowElement id="16S nanopore_ pre-processing_e420c7c8-fb27-4e32-b950-ed0dfe17522e" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing + Emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="577360a7-b087-4b2a-9409-e3974b0a71fb" revisionNumber="40" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. &lt;br&gt;&#xA;For Emu, selected documents are exported to disk from where Emu is run. &lt;br&gt;&#xA;'Export to folder' and 'Data path' must be the same. &lt;br&gt; https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding v.0.1.0&lt;/html&gt;" bundledIconName="plugin">
+    <workflowElement id="16S nanopore_ pre-processing_4bd9510d-bf56-4a5e-bee8-70c951e65aad" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options />
     </workflowElement>
     <workflowElement id="BatchExport" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
@@ -35,16 +35,18 @@
         <option name="back">2</option>
       </options>
     </workflowElement>
-    <workflowElement id="emu_wrapper_Ida_Karlsson" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+    <workflowElement id="emu_wrapper_Ida_Karlsson" exposeNoOptions="false" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <childOption name="options">
-          <option name="pathToDocker" />
-          <option name="pathToData" />
-          <option name="emuImage" />
-          <option name="noThreads" />
+          <option name="pathToDocker">C:\Program Files\Docker\Docker\resources\bin\docker.exe</option>
+          <option name="pathToData"></option>
+          <option name="gitVersion">v.0.1.0</option>
+          <option name="kronaImage">krona:2024-05-13</option>
+          <option name="emuImage">emu:2024-06-10</option>
+          <option name="noThreads">28</option>
         </childOption>
       </Options>
-      <optionToExpose optionName="options.pathToDocker" label="" />
+      <optionToExpose optionName="options.pathToData" label="" />
     </workflowElement>
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementSaveAndContinue">
       <options>
@@ -58,7 +60,7 @@
       </options>
     </workflowElement>
   </XMLSerialisableRootElement>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="e420c7c8-fb27-4e32-b950-ed0dfe17522e" revisionNumber="110" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;/html&gt;" bundledIconName="plugin">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="4bd9510d-bf56-4a5e-bee8-70c951e65aad" revisionNumber="112" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;br&gt;https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding v.0.1.0&lt;/html&gt;" bundledIconName="plugin">
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementForEach" />
     <workflowElement id="FilterOperation" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="true" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>

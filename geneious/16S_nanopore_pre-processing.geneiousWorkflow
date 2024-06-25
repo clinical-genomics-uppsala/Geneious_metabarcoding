@@ -1,5 +1,5 @@
 <geneiousWorkflows>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="1cf21513-7108-4128-bdd3-d637e8886e64" revisionNumber="110" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;/html&gt;" bundledIconName="plugin">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="ba52e7a2-8c0b-4a19-a2ee-4eeb5c40b206" revisionNumber="112" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;br&gt;https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding v.0.1.0&lt;/html&gt;" bundledIconName="plugin">
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementForEach" />
     <workflowElement id="FilterOperation" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="true" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
