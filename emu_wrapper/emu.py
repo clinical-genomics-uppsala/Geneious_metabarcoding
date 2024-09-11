@@ -51,7 +51,9 @@ for file in os.listdir(pathToData):
         # Create CSV file with number of reads per fasta-file
         with open(os.path.join(pathToData, "fasta.csv"), "a", newline="") as csvfile:
             rowToWrite = [
-                file.rsplit(".", 1)[0],  # split on last . match emu behaviour = .gz files get .fasta/.fastq in headers
+                file.rsplit(".", 1)[
+                    0
+                ],  # split on last . match emu behaviour = .gz files get .fasta/.fastq in headers
                 count_fasta(os.path.join(pathToData, file)),
             ]
             writer = csv.writer(csvfile)
@@ -168,8 +170,16 @@ subprocess.run(
     ]
 )
 
-# Copy combined output file to Geneious tmp folder
+# Handle output files
 for file in os.listdir(pathToData):
+    # Compress intermediate files
+    if file.endswith((".sam", ".fa", ".fasta")):
+        with open(os.path.join(pathToData, file), "rb") as f_in:
+            with gzip.open(str(os.path.join(pathToData, file) + ".gz"), "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+                os.remove(os.path.join(pathToData, file))
+
+    # Copy combined output file to Geneious tmp folder
     if file.endswith("emu-combined-species-counts.tsv"):
         multiSampleOutput = file
 
