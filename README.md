@@ -19,8 +19,9 @@ The workflow is tested on Windows and Mac, but may work on Linux.
 # Installation
 
 ## Build docker images for emu and Krona  
-`docker build -f emu_wrapper/emu.Dockerfile -t emu:2024-05-13 .`  
-`docker build -f emu_wrapper/krona.Dockerfile -t krona:2024-05-13 .`
+`cd emu_wrapper`  
+`docker build -f emu.Dockerfile -t emu:2024-05-13 .`  
+`docker build -f krona.Dockerfile -t krona:2024-05-13 .`
 
 Transfer docker image to another computer  
 `docker save -o path/to/emu2024-05-13.tar emu:2024-05-13`  
