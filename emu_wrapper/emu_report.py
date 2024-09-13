@@ -2,40 +2,39 @@
 
 import sys
 import os
-import glob
-
-import pandas as pd
 import numpy as np
-import xlsxwriter
+import pandas as pd
 import pandas.io.formats.excel
+#import xlsxwriter
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None
 
 
 ##### INPUT FILES #####
-if len(sys.argv) >= 3:
-    count_file = sys.argv[1]
-    ra_file = sys.argv[2]
-    output_excel = sys.argv[3]
-    csv_file = sys.argv[4]
-    version_file = sys.argv[5]
+if len(sys.argv) >= 5:
+    COUNT_FILE = sys.argv[1]
+    RA_FILE = sys.argv[2]
+    OUTPUT_EXCEL = sys.argv[3]
+    CSV_FILE = sys.argv[4]
+    VERSION_FILE = sys.argv[5]
 else:
-    count_file = "data/emu-combined-species-counts.tsv"
-    ra_file = "data/emu-combined-species.tsv"
-    output_excel = "data/emu.xlsx"
-    csv_file = "data/fasta.csv"
-    version_file = "data/versions.csv"
+    COUNT_FILE = "data/emu-combined-species-counts.tsv"
+    RA_FILE = "data/emu-combined-species.tsv"
+    OUTPUT_EXCEL = "data/emu.xlsx"
+    CSV_FILE = "data/fasta.csv"
+    VERSION_FILE = "data/versions.csv"
+
+EMUFOLDER = os.getcwd()
 
 
 ##### READING #####
 
-
-# Sort dataframe by sample columns and most abundant taxa
+# Sort data frame by sample columns and most abundant taxa.
 # Sample names should start with barcode no: 01, 02, 03..... or with barcode49, barcode27 etc.
 def sort_samples(df, sortabund):
     header = df.columns.values.tolist()
     taxonomy = [
-        name for name in header if not name[0].isdigit() if not "barcode" in name
+        name for name in header if not name[0].isdigit() if "barcode" not in name
     ]
 
     # sort sample columns by name, not taxonomy
@@ -71,27 +70,85 @@ def sort_samples(df, sortabund):
         return df
 
 
+# LONG FORMAT
+# Dict of sample and relative abundance file
+sample_dict = {}
+for file in os.listdir(EMUFOLDER):
+    if file.endswith(("_rel-abundance.tsv")):
+        sample_dict[file.split("_rel-abundance.tsv")[0].rsplit(".", 1)[0].strip()] = (
+            os.path.join(EMUFOLDER, file)
+        )
+sample_dict = dict(sorted(sample_dict.items()))  # sort by sample name
+
+# Append csv data to a list
+long_list = []
+for sample, file in sample_dict.items():
+    # print(sample, file)
+    emu_tab = pd.read_csv(file, sep="\t", header=0)
+    emu_tab = emu_tab.sort_values(by=["estimated counts"], ascending=False)
+
+    total = emu_tab["estimated counts"].sum()
+    emu_tab.loc[-1] = pd.Series(
+        total, index=["estimated counts"]
+    )  # add total reads per sample row
+    emu_tab.at[-1, "species"] = "total"
+    emu_tab["abundance total"] = (
+        emu_tab["estimated counts"].div(total).values
+    )  # calculate relative abundance including unassigned reads
+
+    emu_tab["Sample"] = sample  # .rsplit(".", 1)[0].strip() remove .fasta/.fastq
+    long_list.append(emu_tab)
+
+
+# Convert to dataframe
+long_df = pd.concat(long_list, axis=0, ignore_index=True)
+long_df = long_df.set_index("Sample")
+long_df = long_df.drop(
+    [
+        "genus",
+        "family",
+        "order",
+        "class",
+        "phylum",
+        "clade",
+        "superkingdom",
+        "subspecies",
+        "species subgroup",
+        "species group",
+    ],
+    axis=1,
+)
+long_df = long_df[
+    ["species", "tax_id", "abundance", "estimated counts", "abundance total"]
+]
+matches = long_df["tax_id"] == "unassigned"
+long_df.loc[matches, "species"] = long_df.loc[matches, "tax_id"]
+long_df = long_df.drop(["tax_id"], axis=1)
+
+
 # COUNTS EMU - tsv
-count_data = pd.read_csv(count_file, sep="\t", header=0)
+count_data = pd.read_csv(COUNT_FILE, sep="\t", header=0)
 count_data, qc = sort_samples(count_data, "yes")
-count_data.columns = count_data.columns.str.rsplit(".", 1).str[0].str.strip() # remove .fasta/.fastq
+count_data.columns = (
+    count_data.columns.str.rsplit(".", 1).str[0].str.strip()
+)  # remove .fasta/.fastq
 
 # RELATIVE ABUNDANCE EMU - tsv
-ra_data = pd.read_csv(ra_file, sep="\t", header=0)
+ra_data = pd.read_csv(RA_FILE, sep="\t", header=0)
 ra_data = sort_samples(ra_data, "no")
 ra_data.columns = ra_data.columns.str.rsplit(".", 1).str[0].str.strip()
 ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abundance)
 
 # QC SHEET
 # CSV file with information from fasta files
-qc_csv = pd.read_csv(csv_file, sep=",", index_col=0, names=["#filtered"])
+qc_csv = pd.read_csv(CSV_FILE, sep=",", index_col=0, names=["#filtered"])
 # Assigned/unassigned from count sheet
 qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
 qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
 # Report date
 qc_csv["report_date"] = pd.Timestamp.today()
 # Software versions
-versions_csv = pd.read_csv(version_file, sep=",", header=None)
+versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
 versions_csv = dict(versions_csv.to_numpy())
 for software, version in versions_csv.items():
     qc_csv[software] = version
@@ -99,9 +156,10 @@ qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
 
 
 ##### WRITING TO EXCEL FILE #####
-writer = pd.ExcelWriter(output_excel)
+writer = pd.ExcelWriter(OUTPUT_EXCEL)
 
 qc_csv.to_excel(writer, sheet_name="qc", index=True)
+long_df.to_excel(writer, sheet_name="emu_long", index=True)
 count_data.to_excel(writer, sheet_name="emu_counts", index=True)
 ra_data.to_excel(writer, sheet_name="emu_proportions", index=True)
 
