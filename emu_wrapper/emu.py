@@ -4,7 +4,6 @@ import sys
 import os
 import subprocess
 import shutil
-import glob
 import csv
 import gzip
 
@@ -177,6 +176,8 @@ for file in os.listdir(pathToData):
         with open(os.path.join(pathToData, file), "rb") as f_in:
             with gzip.open(str(os.path.join(pathToData, file) + ".gz"), "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
+                f_in.close()
+                f_out.close()
                 os.remove(os.path.join(pathToData, file))
 
     # Copy combined output file to Geneious tmp folder
