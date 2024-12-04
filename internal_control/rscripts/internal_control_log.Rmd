@@ -1,0 +1,78 @@
+---
+title: "16S intern-kontroll logg"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+    html_document:
+        toc: true
+params:
+    COUNT_DATA: "../data/emu-combined-species-counts.tsv"
+---
+
+```{r dependencies, include = FALSE}
+library(vegan)
+source("ordiellipse2.R")
+environment(ordiellipse2) = asNamespace('vegan')
+```
+
+```{r Read parameters, include = FALSE}
+COUNT_DATA = params$COUNT_DATA
+```
+
+## Prover
+```{r data, echo=FALSE}
+# Read in .tsv files
+#count_files = list.files(COUNT_DATA, pattern="*.tsv", full.names=TRUE)
+#count_tables = lapply(count_files, function(x) read.csv(x, header=TRUE, sep="\t")) 
+
+# Add sample names to list of tables
+#samples = gsub(("../data/"), "", count_files)
+#samples = gsub(("_rel-abundance.tsv"), "", samples)
+#names(count_tables) = samples
+
+count_table = read.csv(COUNT_DATA, header=TRUE, sep="\t")
+row.names(count_table)=count_table$species
+count_table = count_table[,8:ncol(count_table)]
+count_table[is.na(count_table)] = 0
+
+# Factors
+factors = as.data.frame(names(count_table))
+row.names(factors) = factors$`names(count_tables)`
+factors$sample = "mock"
+
+prop_table = prop.table(as.matrix(count_table), 2)
+cat(names(count_table), sep="\n") # Print samples included
+
+```
+
+## PCA
+```{r pca, echo=FALSE, fig.width=14}
+samples.rda = rda(t(prop_table) ~ 1)
+
+par(mfrow = c(1, 2))
+{plot(samples.rda, display="sites", type="n", main="PCA positiva kontroller")
+points(samples.rda, display="sites")}
+{plot(samples.rda, display="sites", type="n", main="PCA positiva kontroller")
+text(samples.rda, display="sites", cex=1)}
+#par(mfrow = c(1, 1))
+
+par(mfrow = c(1, 2))
+{plot(samples.rda, display="sites", type="n", main="1 standardavvikelse")
+points(samples.rda, display="sites")
+with(factors, ordiellipse(samples.rda, sample, kind="sd", draw="polygon", col="skyblue", border="blue"))
+
+plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
+points(samples.rda, display="sites")
+with(factors, ordiellipse2(samples.rda, sample, kind="sd", draw="polygon", col="skyblue", border="blue"))}
+
+{plot(samples.rda, display="sites", type="n", main="1 standardavvikelse")
+text(samples.rda, display="sites")
+with(factors, ordiellipse(samples.rda, sample, kind="sd", draw="polygon", col="skyblue", border="blue"))
+
+plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
+text(samples.rda, display="sites")
+with(factors, ordiellipse2(samples.rda, sample, kind="sd", draw="polygon", col="skyblue", border="blue"))}
+par(mfrow = c(1, 1))
+
+
+```
+

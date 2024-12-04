@@ -1,0 +1,14 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1282	0.41684885306588176	Staphylococcus epidermidis	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				26751.691994356028
+28037	0.11439033891702888	Streptococcus mitis	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				7341.114390339245
+1280	0.1680829739695681	Staphylococcus aureus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				10786.892937471002
+562	0.19780287522742732	Escherichia coli	Escherichia	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				12694.197320595375
+1351	0.05505259057264779	Enterococcus faecalis	Enterococcus	Enterococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				3533.0550525902445
+28151	0.008539158302387762	Serratia proteamaculans	Serratia	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				548.009023214037
+41202	0.019400077879127585	Ewingella americana	Ewingella	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				1245.019397970892
+1747	0.005640825866770549	Cutibacterium acnes	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				362.00564082586675
+208224	0.011521457137895477	Enterobacter kobei	Enterobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Enterobacter cloacae complex	739.4010332815801
+550	0.00041465506048551503	Enterobacter cloacae	Enterobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Enterobacter cloacae complex	26.61090316171841
+2066049	0.00205687573042462	Citrobacter freundii complex sp. CFNIH2	Citrobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Citrobacter freundii complex	132.00205687573043
+76759	0.0002493182703544994	Pseudomonas monteilii	Pseudomonas	Pseudomonadaceae	Pseudomonadales	Gammaproteobacteria	Proteobacteria		Bacteria			Pseudomonas putida group	16.000249318270356
+unassigned	0.0												0.0
