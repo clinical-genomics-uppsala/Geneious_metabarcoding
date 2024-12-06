@@ -5,12 +5,12 @@ output:
     html_document:
         toc: true
 params:
-    COUNT_DATA: "../data/emu-combined-species-counts.tsv"
+    COUNT_DATA: "/usr/local/src/data/emu-combined-species-counts.tsv"
 ---
 
 ```{r dependencies, include = FALSE}
 library(vegan)
-source("ordiellipse2.R")
+source("/usr/local/src/rscripts/ordiellipse2.R")
 environment(ordiellipse2) = asNamespace('vegan')
 ```
 
