@@ -1,6 +1,8 @@
-`ordiellipse2` <-
+# Modified version of ordiellipse function from the vegan package (release 2.6-8 Commit 3ddac18)
+# Adds "number" argument: number of sd/se to show (if both "number" and "conf" are given "conf" will be shown)
+`ordiellipse_custom_scale` <-
   function (ord, groups, display = "sites", kind = c("sd", "se", "ehull"),
-            conf, draw = c("lines", "polygon", "none"),
+            conf, scale.custom, draw = c("lines", "polygon", "none"),
             w, col = NULL, alpha = 127, show.groups, label = FALSE
             , border = NULL, lty = NULL, lwd = NULL, ...)
   {
@@ -78,8 +80,10 @@
         if (kind == "ehull")
           t <- if (is.nan(tmp$d2)) 0 else sqrt(tmp$d2)
         else {
-          if (missing(conf))
-            t <- 2
+          if (missing(conf) & missing(scale.custom))
+            t <- 1
+          else if (missing(conf))
+            t <- scale.custom
           else t <- sqrt(qchisq(conf, 2))
         }
         if (mat$n.obs > 1)
