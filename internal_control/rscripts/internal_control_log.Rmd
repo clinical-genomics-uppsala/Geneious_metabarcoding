@@ -5,33 +5,28 @@ output:
     html_document:
         toc: true
 params:
-    #COUNT_DATA: "/usr/local/src/data/emu-combined-species-counts.tsv" # For Docker
-    COUNT_DATA: "../data/emu-combined-species-counts.tsv" # For testing locally
+    COUNT_DATA: "/usr/local/src/data/emu-combined-species-counts.tsv" # For Docker
+    #COUNT_DATA: "../data/emu-combined-species-counts.tsv" # For testing locally
 ---
 
 <style>
    tbody tr:nth-child(odd){
     background-color: #F7FBFF;
   }
+  th, td { padding: 5px; }
 </style>
 
 ```{r dependencies, include = FALSE}
 library(vegan)
 library(knitr)
-#source("/usr/local/src/rscripts/ordiellipse_custom_scale.R") # For Docker
-source("ordiellipse_custom_scale.R") # For testing locally
+source("/usr/local/src/rscripts/ordiellipse_custom_scale.R") # For Docker
+#source("ordiellipse_custom_scale.R") # For testing locally
 environment(ordiellipse_custom_scale) = asNamespace('vegan')
 ```
 
-```{r Read parameters, include = FALSE}
-COUNT_DATA = params$COUNT_DATA
-```
-
-### Postiva kontroller: artblandningar
-De första 20 proverna ("twenty") används för att beräkna standardavvikelsen.
-
+### Prover
 ```{r data, echo=FALSE}
-count_table = read.csv(COUNT_DATA, header=TRUE, sep="\t")
+count_table = read.csv(params$COUNT_DATA, header=TRUE, sep="\t")
 row.names(count_table)=count_table$species
 count_table = count_table[,8:ncol(count_table)]
 count_table[is.na(count_table)] = 0
@@ -41,63 +36,78 @@ colnames(count_table) = sub("X", "", colnames(count_table)) # remove X
 factors = as.data.frame(names(count_table))
 row.names(factors) = factors$`names(count_table)`
 factors$`names(count_table)` = NULL
-factors$sample = as.factor(c(rep("twenty",20),rep("new",(length(row.names(factors))-20))))
+factors$no_reads = colSums(count_table)
+factors$no_taxa = specnumber(count_table, MARGIN=2)
 
-# Get new samples
-new_samples = names(count_table) %in% row.names(factors)[factors$sample=="new"]
-
-# Print sample list and type
-kable(factors, format="html")
+# Add sample type when >20 samples
+if (length(row.names(factors)) >= 20) {
+  factors$sample = as.factor(c(rep("stdav",20),rep("test",(length(row.names(factors))-20))))
+  test_samples = names(count_table) %in% row.names(factors)[factors$sample=="test"] # Get test samples
+}
 
 # Calculate proportions from counts
 prop_table = prop.table(as.matrix(count_table), 2)
 
 ```
 
+De första 20 proverna används för att beräkna standardavvikelsen.  
+Antal prover: `r length(row.names(factors))`  
+Varav `r length(which(factors$sample == "test"))` prover utöver de 20 första.
+
+```{r table, echo=FALSE}
+# Print sample list and type
+kable(factors, format="html", align="l")
+```
+  
 ### PCA
 ```{r pca, echo=FALSE}
 samples.rda = rda(t(prop_table) ~ 1)
-colvec = c("red2","white")
+coldict = c("stdav"="white","test"="red")
 
-# par(mfrow = c(1, 2))
-# {plot(samples.rda, display="sites", type="n", main="PCA positiva kontroller")
-# with(factors, points(samples.rda, display="sites", pch=21, bg=colvec[sample]))
-# with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=colvec))}
-# 
-#{plot(samples.rda, display="sites", type="n", main="PCA positiva kontroller")
-#points(samples.rda, select=!new_samples, display="sites", pch=21)
-# text(samples.rda, select=new_samples, display="sites", cex=1)}
-#ordilabel(samples.rda, select=new_samples, display="sites", cex=0.5)}
-#orditorp(samples.rda, select=new_samples, display="sites", cex=0.5, pch=21, bg="red")}
-#ordipointlabel(samples.rda, select=new_samples, display="sites", cex=0.5, pch=21, bg="red")}
+if (length(row.names(factors)) >= 20) {
+  # 2STDAV stdav + test
+  {plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
+    with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+    with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
+    if (length(which(factors$sample == "test") >0) | length(which(factors$sample == "test") <3)) {
+      with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
+    }
+  }
+  
+  # Test samples only with stdev from stdav
+  if (length(which(factors$sample == "test")) > 2) {
+  {ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+    with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
+    title(main="2 standardavvikelser - bara test-prover")}
+  }
+  
+  # 3STDAV stdav + test
+  {plot(samples.rda, display="sites", type="n", main="3 standardavvikelser")
+    with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+    with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
+    if (length(which(factors$sample == "test") >0) | length(which(factors$sample == "test") <3)) {
+          with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
+        }
+    }
+  
+  # Test samples only with stdev from stdav
+  if (length(which(factors$sample == "test")) > 2) {
+  {ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+    with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
+    title(main="3 standardavvikelser - bara test-prover")}
+  }
 
+} else if (length(row.names(factors)) > 2) {
+  plot(samples.rda, display="sites", type="points", pch=21, main="PCA positiva kontroller - färre än 20 prover")
+  ordipointlabel(samples.rda, display="sites", cex=0.75, pch=21)
 
-par(mfrow = c(1, 1))
-# 2STDAV
-{plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
-with(factors, points(samples.rda, display="sites", pch=21, bg=colvec[sample]))
-with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="twenty", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
-with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=colvec))}
-
-#plot(samples.rda, display="sites", type="n", main="2 standardavvikelser - bara nya prover")
-#points(samples.rda, select=!new_samples, display="sites", pch=21)
-#text(samples.rda, select=new_samples, display="sites", cex=0.5)
-{ordipointlabel(samples.rda, select=new_samples, display="sites", cex=0.75, pch=21, bg="red")
-with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="twenty", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
-with(factors, legend("topright", legend="new", bty="n", pch=21, col="black", pt.bg="red"))}
-
-# 3STDAV
-{plot(samples.rda, display="sites", type="n", main="3 standardavvikelser")
-with(factors, points(samples.rda, display="sites", pch=21, bg=colvec[sample]))
-with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="twenty", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
-with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=colvec))}
-
-#{plot(samples.rda, display="sites", type="n", main="3 standardavvikelser - bara nya prover")
-#points(samples.rda, select=!new_samples, display="sites", pch=21)
-#text(samples.rda, select=new_samples, display="sites", cex=0.5)
-{ordipointlabel(samples.rda, select=new_samples, display="sites", cex=0.75, pch=21, bg="red")
-with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="twenty", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
-with(factors, legend("topright", legend="new", bty="n", pch=21, col="black", pt.bg="red"))}
+} else {
+  cat("För få prover för PCA")
+}
 
 
 ```
