@@ -32,6 +32,9 @@ count_table = count_table[,8:ncol(count_table)]
 count_table[is.na(count_table)] = 0
 colnames(count_table) = sub("X", "", colnames(count_table)) # remove X
 
+# Sorting by name 
+count_table = count_table[, order(names(count_table))]
+
 # Factors
 factors = as.data.frame(names(count_table))
 row.names(factors) = factors$`names(count_table)`
@@ -70,7 +73,7 @@ if (length(row.names(factors)) >= 20) {
     with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
-    if (length(which(factors$sample == "test") >0) | length(which(factors$sample == "test") <3)) {
+    if (length(which(factors$sample == "test")) > 0 & length(which(factors$sample == "test")) < 3) { # FIXAT FEL HÄR!!!
       with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
     }
   }
@@ -88,7 +91,7 @@ if (length(row.names(factors)) >= 20) {
     with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
-    if (length(which(factors$sample == "test") >0) | length(which(factors$sample == "test") <3)) {
+    if (length(which(factors$sample == "test")) > 0 & length(which(factors$sample == "test")) < 3) { # FIXAT FEL HÄR!!!
           with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
         }
     }
