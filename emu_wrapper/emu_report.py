@@ -18,11 +18,11 @@ if len(sys.argv) >= 5:
     CSV_FILE = sys.argv[4]
     VERSION_FILE = sys.argv[5]
 else:
-    COUNT_FILE = "data/emu-combined-species-counts.tsv"
-    RA_FILE = "data/emu-combined-species.tsv"
-    OUTPUT_EXCEL = "data/emu.xlsx"
-    CSV_FILE = "data/fasta.csv"
-    VERSION_FILE = "data/versions.csv"
+    COUNT_FILE = "emu-combined-species-counts.tsv"
+    RA_FILE = "emu-combined-species.tsv"
+    OUTPUT_EXCEL = "emu.xlsx"
+    CSV_FILE = "fasta.csv"
+    VERSION_FILE = "versions.csv"
 
 EMUFOLDER = os.getcwd()
 
@@ -160,10 +160,10 @@ qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
 ##### WRITING TO EXCEL FILE #####
 writer = pd.ExcelWriter(OUTPUT_EXCEL)
 
-qc_csv.to_excel(writer, sheet_name="qc", index=True)
-long_df.to_excel(writer, sheet_name="emu_long", index=True)
-count_data.to_excel(writer, sheet_name="emu_counts", index=True)
-ra_data.to_excel(writer, sheet_name="emu_proportions", index=True)
+qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
+long_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
+count_data.to_excel(writer, sheet_name="emu_counts", index=True, float_format="%.2f")
+ra_data.to_excel(writer, sheet_name="emu_proportions", index=True, float_format="%.2f")
 
 workbook = writer.book
 
@@ -175,10 +175,24 @@ align_cells.set_align("left")
 
 # Formats
 bold_format = workbook.add_format({"bold": "True"}) # header and index
+border_format = workbook.add_format ({"bottom": 1 , "bold": "True"})
 
 for worksheet in workbook.worksheets():
     worksheet.set_column("A:A", 25, bold_format)  # width of cell
     worksheet.set_row(0, 15, bold_format)  # default row height
     worksheet.freeze_panes(1, 1)
+
+    if worksheet.get_name() == "qc":
+        worksheet.set_column("F:F", 20)
+        worksheet.set_column("H:H", 15)
+        worksheet.set_column("J:J", 15)
+    
+    if worksheet.get_name() == "emu_long":
+        worksheet.set_column("B:B", 25)
+
+        long_df.reset_index(inplace=True)
+        rows_with_total = long_df[long_df.applymap(lambda x: True if isinstance(x, str) and 'total' in x.lower() else False).any(1)].index.tolist()
+        for row in rows_with_total:
+            worksheet.set_row(row+1, None, border_format) # Show where samples end (row total) with border and bold format
 
 writer.save()  # writer.save() # Will be removed in a future version
