@@ -96,6 +96,8 @@ for sample, file in sample_dict.items():
         emu_tab["estimated counts"].div(total).values
     )  # calculate relative abundance including unassigned reads
 
+    emu_tab["% total"] = emu_tab["abundance total"] * 100
+
     emu_tab["Sample"] = sample  # .rsplit(".", 1)[0].strip() remove .fasta/.fastq
     long_list.append(emu_tab)
 
@@ -119,7 +121,7 @@ long_df = long_df.drop(
     axis=1,
 )
 long_df = long_df[
-    ["species", "tax_id", "abundance", "estimated counts", "abundance total"]
+    ["species", "tax_id", "abundance", "estimated counts", "abundance total","% total"]
 ]
 matches = long_df["tax_id"] == "unassigned"
 long_df.loc[matches, "species"] = long_df.loc[matches, "tax_id"]
@@ -171,8 +173,8 @@ workbook = writer.book
 align_cells = workbook.add_format()
 align_cells.set_align("left")
 
-# Set format of header and index
-bold_format = workbook.add_format({"bold": "True"})
+# Formats
+bold_format = workbook.add_format({"bold": "True"}) # header and index
 
 for worksheet in workbook.worksheets():
     worksheet.set_column("A:A", 25, bold_format)  # width of cell
