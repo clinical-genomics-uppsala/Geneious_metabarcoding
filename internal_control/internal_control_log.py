@@ -14,7 +14,9 @@ emuImage = config["DEFAULT"]["emuImage"]
 veganImage = config["DEFAULT"]["veganImage"]
 pathToData = config["DEFAULT"]["pathToData"]
 
-mountPath = os.path.join(pathToData, ":/usr/local/src/data")
+mountPath = os.path.join(pathToData, f':{pathToData}')
+
+emu_file_path = os.path.join(pathToData, 'emu-combined-species-counts.tsv')
 report_name = str(datetime.today().strftime("%Y-%m-%d")) + "_16S_IK_logg.html"
 
 # Used to check if report name is unique
@@ -26,9 +28,8 @@ def unique_filename(path):
         counter += 1
     return path
 
-
 # Run emu container combine-outputs
-combineOutputs = "emu combine-outputs --counts /usr/local/src/data species"
+combineOutputs = f'emu combine-outputs --counts {pathToData} species'
 subprocess.run(
    [
        pathToDocker,
@@ -44,8 +45,8 @@ subprocess.run(
 )
 
 # Run vegan container
-unique_name = os.path.basename(unique_filename(os.path.join(pathToData, report_name)))
-rmarkdown = "rmarkdown::render(\"../rscripts/internal_control_log.Rmd\", output_file=\"/usr/local/src/data/" +str(unique_name)+ "\")"
+unique_name_path = unique_filename(os.path.join(pathToData, report_name))
+rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(args='{emu_file_path}'), output_file='{unique_name_path}')"
 subprocess.run(
     [
         pathToDocker,

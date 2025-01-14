@@ -5,8 +5,8 @@ output:
     html_document:
         toc: true
 params:
-    COUNT_DATA: "/usr/local/src/data/emu-combined-species-counts.tsv" # For Docker
     #COUNT_DATA: "../data/emu-combined-species-counts.tsv" # For testing locally
+    args: '' # For docker
 ---
 
 <style>
@@ -26,7 +26,7 @@ environment(ordiellipse_custom_scale) = asNamespace('vegan')
 
 ### Prover
 ```{r data, echo=FALSE}
-count_table = read.csv(params$COUNT_DATA, header=TRUE, sep="\t")
+count_table = read.csv(params$args, header=TRUE, sep="\t")
 row.names(count_table)=count_table$species
 count_table = count_table[,8:ncol(count_table)]
 count_table[is.na(count_table)] = 0
