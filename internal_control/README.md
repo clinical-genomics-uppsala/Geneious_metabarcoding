@@ -16,6 +16,7 @@ Docker images:
 - Collect all `_rel-abundance.tsv` files from emu to be included in a folder.
 - Adapt the `config.ini` file, example:
 ```[DEFAULT]
+github = https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/internal_control/internal_control
 pathToDocker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
 emuImage = emu:2024-12-16
 veganImage = vegan:2024-12-12

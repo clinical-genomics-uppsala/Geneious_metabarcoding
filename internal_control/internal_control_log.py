@@ -9,6 +9,7 @@ from datetime import datetime
 config = configparser.ConfigParser()
 config.read("config.ini")
 
+github = config["DEFAULT"]["github"]
 pathToDocker = config["DEFAULT"]["pathToDocker"]
 emuImage = config["DEFAULT"]["emuImage"]
 veganImage = config["DEFAULT"]["veganImage"]
@@ -46,7 +47,7 @@ subprocess.run(
 
 # Run vegan container
 unique_name_path = unique_filename(os.path.join(pathToData, report_name))
-rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(args='{emu_file_path}'), output_file='{unique_name_path}')"
+rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(emu='{emu_file_path}',github='{github}'), output_file='{unique_name_path}')"
 subprocess.run(
     [
         pathToDocker,
