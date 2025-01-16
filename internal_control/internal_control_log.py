@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import posixpath
 import subprocess
 import configparser
 from datetime import datetime
@@ -15,11 +16,6 @@ emuImage = config["DEFAULT"]["emuImage"]
 veganImage = config["DEFAULT"]["veganImage"]
 pathToData = config["DEFAULT"]["pathToData"]
 
-mountPath = os.path.join(pathToData, f':{pathToData}')
-
-emu_file_path = os.path.join(pathToData, 'emu-combined-species-counts.tsv')
-report_name = str(datetime.today().strftime("%Y-%m-%d")) + "_16S_IK_logg.html"
-
 # Used to check if report name is unique
 def unique_filename(path):
     filename, extension = os.path.splitext(path)
@@ -29,8 +25,22 @@ def unique_filename(path):
         counter += 1
     return path
 
+# Convert windows paths docker & R compatible paths
+if os.name == "nt":
+    try:
+        containerPath = pathToData.replace("\\","/").split(":")[1] 
+    except IndexError:
+        containerPath = pathToData.replace("\\","/")
+else:
+    containerPath = pathToData
+
+# Paths
+mountPath = os.path.join(pathToData, f':{containerPath}')
+emu_file_path = posixpath.join(containerPath, 'emu-combined-species-counts.tsv')
+report_path = unique_filename(posixpath.join(containerPath, str(datetime.today().strftime("%Y-%m-%d")) + "_16S_IK_logg.html"))
+
 # Run emu container combine-outputs
-combineOutputs = f'emu combine-outputs --counts {pathToData} species'
+combineOutputs = f'emu combine-outputs --counts {containerPath} species'
 subprocess.run(
    [
        pathToDocker,
@@ -46,8 +56,7 @@ subprocess.run(
 )
 
 # Run vegan container
-unique_name_path = unique_filename(os.path.join(pathToData, report_name))
-rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(emu='{emu_file_path}',github='{github}'), output_file='{unique_name_path}')"
+rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(emu='{emu_file_path}',github='{github}'), output_file='{report_path}')"
 subprocess.run(
     [
         pathToDocker,
