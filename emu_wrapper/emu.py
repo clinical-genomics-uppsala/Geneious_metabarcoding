@@ -6,7 +6,6 @@ import subprocess
 import shutil
 import csv
 import gzip
-
 import configparser
 
 # Outfile to be imported to Geneious
@@ -32,7 +31,19 @@ kronaImage = config["DEFAULT"]["kronaImage"]
 emuImage = config["DEFAULT"]["emuImage"] # database included in image
 
 # Emu options
+minAbund = config["EMU"]["minAbund"]
+alignN = config["EMU"]["alignN"]
+batchK = config["EMU"]["batchK"]
 noThreads = config["EMU"]["noThreads"]
+emuArgs = []
+if config.getboolean('EMU', 'keepCounts'):
+    emuArgs.append('--keep-counts')
+if config.getboolean('EMU', 'keepFiles'):
+    emuArgs.append('--keep-files')
+if config.getboolean('EMU', 'keepReadAssignments'):
+    emuArgs.append('--keep-read-assignments')
+if config.getboolean('EMU', 'outputUnclassified'):
+    emuArgs.append('--output-unclassified')
 
 
 def count_fasta(fastafile):
@@ -108,16 +119,18 @@ if len(inFiles) > 0:
                 emuImage,
                 "emu",
                 "abundance",
-                inFile,
-                "--keep-counts",
-                "--keep-files",
-                "--keep-read-assignments",
-                "--output-unclassified",
+                inFile, 
+                "--min-abundance",
+                minAbund,
+                "--N",
+                alignN,
+                "--K",
+                batchK,
                 "--threads",
                 noThreads,
                 "--output-dir",
                 "/geneious",
-            ]
+            ] + emuArgs
         )
 else:
     sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
