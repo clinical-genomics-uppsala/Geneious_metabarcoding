@@ -7,6 +7,8 @@ import shutil
 import csv
 import gzip
 
+import configparser
+
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
 
@@ -14,19 +16,23 @@ outFile = sys.argv[2]
 # Example windows: D:\Geneious 2021.1 Data\transient\1677846391422\x\120
 pathToGeneiousData = sys.argv[4]
 
-pathToDocker = sys.argv[6]
+# Config
+config = configparser.ConfigParser()
+config.read(os.path.join(sys.argv[6], "config.ini"))
+pathToDocker = config["DEFAULT"]["pathToDocker"]
 
 # In/out data folder selected by user
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
 
 # Github version
-gitVersion = sys.argv[10]
-# Krona
-kronaImage = sys.argv[12]
+gitVersion = config["DEFAULT"]["gitVersion"]
+# Docker images
+kronaImage = config["DEFAULT"]["kronaImage"]
+emuImage = config["DEFAULT"]["emuImage"] # database included in image
+
 # Emu options
-emuImage = sys.argv[14]  # database included in image
-noThreads = sys.argv[16]
+noThreads = config["EMU"]["noThreads"]
 
 
 def count_fasta(fastafile):
