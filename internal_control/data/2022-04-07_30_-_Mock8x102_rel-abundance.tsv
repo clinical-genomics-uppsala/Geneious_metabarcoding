@@ -1,0 +1,12 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1280	0.13835184385632143	Staphylococcus aureus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				941.0692419106983
+1282	0.43822545020585757	Staphylococcus epidermidis	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2980.809512300243
+562	0.19930506634245174	Escherichia coli	Escherichia	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				1355.6730612613567
+28037	0.10061965181469457	Streptococcus mitis	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				684.4148716435525
+1351	0.09117130434443065	Enterococcus faecalis	Enterococcus	Enterococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				620.1472121508173
+41202	0.013427617911694927	Ewingella americana	Ewingella	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				91.3346570353489
+2066049	0.004152580635255219	Citrobacter freundii complex sp. CFNIH2	Citrobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Citrobacter freundii complex	28.245853481006
+208224	0.001622897609914429	Enterobacter kobei	Enterobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Enterobacter cloacae complex	11.038949542637946
+1747	0.002508114488049572	Cutibacterium acnes	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				17.06019474771319
+28151	0.010615472791329881	Serratia proteamaculans	Serratia	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				72.20644592662585
+unassigned	0.0												0.0
