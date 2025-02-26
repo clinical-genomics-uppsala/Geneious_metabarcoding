@@ -17,7 +17,7 @@ pathToGeneiousData = sys.argv[4]
 
 # Config
 config = configparser.ConfigParser()
-config.read(os.path.join(sys.argv[6], "config.ini"))
+config.read(os.path.join(sys.argv[6]))
 pathToDocker = config["DEFAULT"]["pathToDocker"]
 
 # In/out data folder selected by user
@@ -30,20 +30,20 @@ gitVersion = config["DEFAULT"]["gitVersion"]
 kronaImage = config["DEFAULT"]["kronaImage"]
 emuImage = config["DEFAULT"]["emuImage"] # database included in image
 
-# Emu options
+# Build Emu command
 minAbund = config["EMU"]["minAbund"]
 alignN = config["EMU"]["alignN"]
 batchK = config["EMU"]["batchK"]
 noThreads = config["EMU"]["noThreads"]
-emuArgs = []
+emuBooleans = []
 if config.getboolean('EMU', 'keepCounts'):
-    emuArgs.append('--keep-counts')
+    emuBooleans.append('--keep-counts')
 if config.getboolean('EMU', 'keepFiles'):
-    emuArgs.append('--keep-files')
+    emuBooleans.append('--keep-files')
 if config.getboolean('EMU', 'keepReadAssignments'):
-    emuArgs.append('--keep-read-assignments')
+    emuBooleans.append('--keep-read-assignments')
 if config.getboolean('EMU', 'outputUnclassified'):
-    emuArgs.append('--output-unclassified')
+    emuBooleans.append('--output-unclassified')
 
 
 def count_fasta(fastafile):
@@ -130,7 +130,7 @@ if len(inFiles) > 0:
                 noThreads,
                 "--output-dir",
                 "/geneious",
-            ] + emuArgs
+            ] + emuBooleans
         )
 else:
     sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
