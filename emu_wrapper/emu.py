@@ -57,19 +57,16 @@ def count_fasta(fastafile):
 
 
 # List of fasta files in data folder, create csv
-inFiles = []
+inFiles = {}
 for file in os.listdir(pathToData):
     if file.endswith((".fasta", ".fa", ".fasta.gz", ".fa.gz")):
-        inFiles.append(
-            "".join(["/geneious/", file])
-        )  # Must be linux format also in windows
+        inFiles[file.split(".")[0]] = "".join(["/geneious/", file])
+        # Must be linux format also in windows
 
         # Create CSV file with number of reads per fasta-file
         with open(os.path.join(pathToData, "fasta.csv"), "a", newline="") as csvfile:
             rowToWrite = [
-                file.rsplit(".", 1)[
-                    0
-                ],  # split on last . match emu behaviour = .gz files get .fasta/.fastq in headers
+                file.split(".")[0],  # basename
                 count_fasta(os.path.join(pathToData, file)),
             ]
             writer = csv.writer(csvfile)
@@ -108,7 +105,7 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:
-    for inFile in inFiles:
+    for sample, inFile in inFiles.items():
         subprocess.run(
             [
                 pathToDocker,
@@ -130,6 +127,8 @@ if len(inFiles) > 0:
                 noThreads,
                 "--output-dir",
                 "/geneious",
+                "--output-basename",
+                sample,
             ] + emuBooleans
         )
 else:
