@@ -17,18 +17,18 @@ pathToGeneiousData = sys.argv[4]
 
 # Config
 config = configparser.ConfigParser()
-config.read(os.path.join(sys.argv[6]))
-pathToDocker = config["DEFAULT"]["pathToDocker"]
+config.read(sys.argv[6])
+pathToDocker = config["SOFTWARE"]["pathToDocker"]
 
 # In/out data folder selected by user
 pathToData = sys.argv[8]
 mountPath = os.path.join(pathToData, ":/geneious")
 
 # Github version
-gitVersion = config["DEFAULT"]["gitVersion"]
+gitVersion = config["SOFTWARE"]["gitVersion"]
 # Docker images
-kronaImage = config["DEFAULT"]["kronaImage"]
-emuImage = config["DEFAULT"]["emuImage"] # database included in image
+kronaImage = config["SOFTWARE"]["kronaImage"]
+emuImage = config["SOFTWARE"]["emuImage"] # database included in image
 
 # Build Emu command
 minAbund = config["EMU"]["minAbund"]
@@ -44,6 +44,13 @@ if config.getboolean('EMU', 'keepReadAssignments'):
     emuBooleans.append('--keep-read-assignments')
 if config.getboolean('EMU', 'outputUnclassified'):
     emuBooleans.append('--output-unclassified')
+
+# Report
+spikeTaxa = config["REPORT"]["spikeTaxa"]
+minReads = config["REPORT"]["minReads"]
+maxUnassignedProp = config["REPORT"]["maxUnassignedProp"]
+minCounts = config["REPORT"]["minCounts"]
+minAbundTot = config["REPORT"]["minAbundTot"]
 
 
 def count_fasta(fastafile):
@@ -102,6 +109,20 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
     writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
     writer.writerow(["krona_image", kronaImage])
     writer.writerow(["krona_version", kronaVersion.stdout.replace("'", "").strip()])
+    writer.writerow(["--min-abundance", config["EMU"]["minAbund"]])
+    writer.writerow(["--N", config["EMU"]["alignN"]])
+    writer.writerow(["--K", config["EMU"]["batchK"]])
+    writer.writerow(["--threads", config["EMU"]["noThreads"]])
+    writer.writerow(["--keep-counts", config["EMU"]["keepCounts"]])
+    writer.writerow(["--keep-files", config["EMU"]["keepFiles"]])
+    writer.writerow(["--keep-read-assignments", config["EMU"]["keepReadAssignments"]])
+    writer.writerow(["--output-unclassified", config["EMU"]["outputUnclassified"]])
+    writer.writerow(["spike_taxa", config["REPORT"]["spikeTaxa"]])
+    writer.writerow(["minReads", config["REPORT"]["minReads"]])
+    writer.writerow(["maxUnassignedProp", config["REPORT"]["maxUnassignedProp"]])
+    writer.writerow(["minCounts", config["REPORT"]["minCounts"]])
+    writer.writerow(["minAbundTot", config["REPORT"]["minAbundTot"]])
+
 
 # Run emu abundance for each sample
 if len(inFiles) > 0:
