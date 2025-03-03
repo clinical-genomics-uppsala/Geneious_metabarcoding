@@ -69,6 +69,7 @@ Transfer docker image to another computer
 	Press 'Add' to add two user options (in this order):   
 	- 'Command Line Switch': pathToDocker, 'Option Label': Docker path  
 	- 'Command Line Switch': pathToData, 'Option Label': Data path  
+	- 'Command Line Switch': gitVersion, 'Option Label': Github version  
 	- 'Command Line Switch': kronaImage, 'Option Label': Krona docker image 
 	- 'Command Line Switch': emuImage, 'Option Label': Emu docker image  
 	- 'Command Line Switch': noThreads, 'Option Label': Threads
