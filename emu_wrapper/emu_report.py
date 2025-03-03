@@ -5,7 +5,8 @@ import os
 import numpy as np
 import pandas as pd
 import pandas.io.formats.excel
-#import xlsxwriter
+
+# import xlsxwriter
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None
 
@@ -26,8 +27,8 @@ else:
 
 EMUFOLDER = os.getcwd()
 
-
 ##### READING #####
+
 
 # Sort data frame by sample columns and most abundant taxa.
 # Sample names should start with barcode no: 01, 02, 03..... or with barcode49, barcode27 etc.
@@ -121,7 +122,7 @@ long_df = long_df.drop(
     axis=1,
 )
 long_df = long_df[
-    ["species", "tax_id", "abundance", "estimated counts", "abundance total","% total"]
+    ["species", "tax_id", "abundance", "estimated counts", "abundance total", "% total"]
 ]
 matches = long_df["tax_id"] == "unassigned"
 long_df.loc[matches, "species"] = long_df.loc[matches, "tax_id"]
@@ -147,19 +148,21 @@ qc_csv = pd.read_csv(CSV_FILE, sep=",", index_col=0, names=["#filtered"])
 # Assigned/unassigned from count sheet
 qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
 qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
-# Report date
-qc_csv["report_date"] = pd.Timestamp.today()
-# Software versions
-versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
-versions_csv = dict(versions_csv.to_numpy())
-for software, version in versions_csv.items():
-    qc_csv[software] = version
 qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
+
+# SOFTWARE SHEET
+versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
+versions_csv.loc[-1] = ["report_date", pd.Timestamp.today()]  # adding a row
+versions_csv.index = versions_csv.index + 1  # shifting index
+versions_csv.sort_index(inplace=True)  # sorting by index
 
 
 ##### WRITING TO EXCEL FILE #####
 writer = pd.ExcelWriter(OUTPUT_EXCEL)
 
+versions_csv.to_excel(
+    writer, sheet_name="software", index=False, header=False, float_format="%.2f"
+)
 qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
 long_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
 count_data.to_excel(writer, sheet_name="emu_counts", index=True, float_format="%.2f")
@@ -174,8 +177,8 @@ align_cells = workbook.add_format()
 align_cells.set_align("left")
 
 # Formats
-bold_format = workbook.add_format({"bold": "True"}) # header and index
-border_format = workbook.add_format ({"bottom": 1 , "bold": "True"})
+bold_format = workbook.add_format({"bold": "True"})  # header and index
+border_format = workbook.add_format({"bottom": 1, "bold": "True"})
 
 for worksheet in workbook.worksheets():
     worksheet.set_column("A:A", 25, bold_format)  # width of cell
@@ -186,13 +189,19 @@ for worksheet in workbook.worksheets():
         worksheet.set_column("F:F", 20)
         worksheet.set_column("H:H", 15)
         worksheet.set_column("J:J", 15)
-    
+
     if worksheet.get_name() == "emu_long":
         worksheet.set_column("B:B", 25)
 
         long_df.reset_index(inplace=True)
-        rows_with_total = long_df[long_df.applymap(lambda x: True if isinstance(x, str) and 'total' in x.lower() else False).any(1)].index.tolist()
+        rows_with_total = long_df[
+            long_df.applymap(
+                lambda x: True if isinstance(x, str) and "total" in x.lower() else False
+            ).any(1)
+        ].index.tolist()
         for row in rows_with_total:
-            worksheet.set_row(row+1, None, border_format) # Show where samples end (row total) with border and bold format
+            worksheet.set_row(
+                row + 1, None, border_format
+            )  # Show where samples end (row total) with border and bold format
 
 writer.save()  # writer.save() # Will be removed in a future version

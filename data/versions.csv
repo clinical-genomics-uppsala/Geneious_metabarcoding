@@ -1,5 +1,20 @@
-github_version,v.0.3.0
-emu_image,emu:2024-12-16
+pathtodocker,/usr/local/bin/docker
+gitversion,dev
+kronaimage,krona:2024-05-13
+emuimage,emu:2024-12-16
+seqtype,map-ont
+minabund,0.0001
+alignn,50
+batchk,500000000
+nothreads,8
+keepcounts,True
+keepfiles,True
+keepreadassignments,True
+outputunclassified,True
+spiketaxa,"""Imtechella halotolerans"", ""Allobacillus halotolerans"", ""Truepera radiovictrix"""
+minreads,1000
+maxunassignedprop,0.9
+mincounts,50
+minabundtot,0.01
 emu_version,3.4.5
-krona_image,krona:2024-05-13
 krona_version,2.8.1
