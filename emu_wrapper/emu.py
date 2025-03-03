@@ -28,7 +28,7 @@ mountPath = os.path.join(pathToData, ":/geneious")
 gitVersion = config["SOFTWARE"]["gitVersion"]
 # Docker images
 kronaImage = config["SOFTWARE"]["kronaImage"]
-emuImage = config["SOFTWARE"]["emuImage"] # database included in image
+emuImage = config["SOFTWARE"]["emuImage"]  # database included in image
 
 # Build Emu command
 seqType = config["EMU"]["seqType"]
@@ -37,14 +37,14 @@ alignN = config["EMU"]["alignN"]
 batchK = config["EMU"]["batchK"]
 noThreads = config["EMU"]["noThreads"]
 emuBooleans = []
-if config.getboolean('EMU', 'keepCounts'):
-    emuBooleans.append('--keep-counts')
-if config.getboolean('EMU', 'keepFiles'):
-    emuBooleans.append('--keep-files')
-if config.getboolean('EMU', 'keepReadAssignments'):
-    emuBooleans.append('--keep-read-assignments')
-if config.getboolean('EMU', 'outputUnclassified'):
-    emuBooleans.append('--output-unclassified')
+if config.getboolean("EMU", "keepCounts"):
+    emuBooleans.append("--keep-counts")
+if config.getboolean("EMU", "keepFiles"):
+    emuBooleans.append("--keep-files")
+if config.getboolean("EMU", "keepReadAssignments"):
+    emuBooleans.append("--keep-read-assignments")
+if config.getboolean("EMU", "outputUnclassified"):
+    emuBooleans.append("--output-unclassified")
 
 # Report
 spikeTaxa = config["REPORT"]["spikeTaxa"]
@@ -105,25 +105,16 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
         capture_output=True,
         text=True,
     )
-    writer.writerow(["github_version", gitVersion])
-    writer.writerow(["emu_image", emuImage])
+
+    # Add config params
+    for section in config:
+        confdict = dict(config[section])
+        for k, v in confdict.items():
+            writer.writerow([k, v])
+
+    # Add data from containers
     writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
-    writer.writerow(["krona_image", kronaImage])
     writer.writerow(["krona_version", kronaVersion.stdout.replace("'", "").strip()])
-    writer.writerow(["seqType", config["EMU"]["seqType"]])
-    writer.writerow(["--min-abundance", config["EMU"]["minAbund"]])
-    writer.writerow(["--N", config["EMU"]["alignN"]])
-    writer.writerow(["--K", config["EMU"]["batchK"]])
-    writer.writerow(["--threads", config["EMU"]["noThreads"]])
-    writer.writerow(["--keep-counts", config["EMU"]["keepCounts"]])
-    writer.writerow(["--keep-files", config["EMU"]["keepFiles"]])
-    writer.writerow(["--keep-read-assignments", config["EMU"]["keepReadAssignments"]])
-    writer.writerow(["--output-unclassified", config["EMU"]["outputUnclassified"]])
-    writer.writerow(["spike_taxa", config["REPORT"]["spikeTaxa"]])
-    writer.writerow(["minReads", config["REPORT"]["minReads"]])
-    writer.writerow(["maxUnassignedProp", config["REPORT"]["maxUnassignedProp"]])
-    writer.writerow(["minCounts", config["REPORT"]["minCounts"]])
-    writer.writerow(["minAbundTot", config["REPORT"]["minAbundTot"]])
 
 
 # Run emu abundance for each sample
@@ -139,7 +130,7 @@ if len(inFiles) > 0:
                 emuImage,
                 "emu",
                 "abundance",
-                inFile, 
+                inFile,
                 "--type",
                 seqType,
                 "--min-abundance",
@@ -154,7 +145,8 @@ if len(inFiles) > 0:
                 "/geneious",
                 "--output-basename",
                 sample,
-            ] + emuBooleans
+            ]
+            + emuBooleans
         )
 else:
     sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
