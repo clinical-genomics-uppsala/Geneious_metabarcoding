@@ -31,6 +31,7 @@ kronaImage = config["SOFTWARE"]["kronaImage"]
 emuImage = config["SOFTWARE"]["emuImage"] # database included in image
 
 # Build Emu command
+seqType = config["EMU"]["seqType"]
 minAbund = config["EMU"]["minAbund"]
 alignN = config["EMU"]["alignN"]
 batchK = config["EMU"]["batchK"]
@@ -109,6 +110,7 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
     writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
     writer.writerow(["krona_image", kronaImage])
     writer.writerow(["krona_version", kronaVersion.stdout.replace("'", "").strip()])
+    writer.writerow(["seqType", config["EMU"]["seqType"]])
     writer.writerow(["--min-abundance", config["EMU"]["minAbund"]])
     writer.writerow(["--N", config["EMU"]["alignN"]])
     writer.writerow(["--K", config["EMU"]["batchK"]])
@@ -138,6 +140,8 @@ if len(inFiles) > 0:
                 "emu",
                 "abundance",
                 inFile, 
+                "--type",
+                seqType,
                 "--min-abundance",
                 minAbund,
                 "--N",
