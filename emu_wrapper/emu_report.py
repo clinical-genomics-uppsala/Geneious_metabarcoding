@@ -152,56 +152,67 @@ qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
 
 # SOFTWARE SHEET
 versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
-versions_csv.loc[-1] = ["report_date", pd.Timestamp.today()]  # adding a row
-versions_csv.index = versions_csv.index + 1  # shifting index
-versions_csv.sort_index(inplace=True)  # sorting by index
+versions_csv.loc[-1] = ["report_date", pd.Timestamp.today()]  # add date as first row
+versions_csv.index = versions_csv.index + 1 
+versions_csv.sort_index(inplace=True)
+
 
 
 ##### WRITING TO EXCEL FILE #####
-writer = pd.ExcelWriter(OUTPUT_EXCEL)
+with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
 
-versions_csv.to_excel(
-    writer, sheet_name="software", index=False, header=False, float_format="%.2f"
-)
-qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
-long_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
-count_data.to_excel(writer, sheet_name="emu_counts", index=True, float_format="%.2f")
-ra_data.to_excel(writer, sheet_name="emu_proportions", index=True, float_format="%.2f")
+    versions_csv.to_excel(
+        writer, sheet_name="software", index=False, header=False, float_format="%.2f"
+    )
+    qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
+    long_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
+    count_data.to_excel(writer, sheet_name="emu_counts", index=True, float_format="%.2f")
+    ra_data.to_excel(writer, sheet_name="emu_proportions", index=True, float_format="%.2f")
 
-workbook = writer.book
+    workbook = writer.book
+
+    ##### FORMATTING ####
+    # Left-adjust cells
+    align_cells = workbook.add_format()
+    align_cells.set_align("left")
+
+    # Formats
+    bold_format = workbook.add_format({"bold": "True"})  # header and index
+    border_format = workbook.add_format({"bottom": 1, "bold": "True"})
+    spike_format = workbook.add_format({"color": "orange"})
+    pass_cutoff_format = workbook.add_format({"color": "green"})
+
+    report_params = dict(versions_csv.to_numpy())
+    #print(report_params)
+
+    for worksheet in workbook.worksheets():
+        worksheet.set_column("A:A", 25, bold_format)  # width of cell
+        worksheet.set_row(0, 15, bold_format)  # default row height
+        worksheet.freeze_panes(1, 1)
+
+        for taxon in report_params['spiketaxa'].split(','):
+            print(taxon.strip().strip('"'), worksheet.get_name())
+            worksheet.conditional_format(1, 1, len(long_df), len(count_data.columns), # (first_row, first_col, last_row, last_col)
+                {'type':     'text',
+                'criteria': 'containing',
+                'value':    taxon.strip().strip('"'),
+                'format':   spike_format})
+
+        if worksheet.get_name() == "software":
+            worksheet.set_column("B:B", 30)
+
+        if worksheet.get_name() == "emu_long":
+            worksheet.set_column("B:B", 25)
+
+            long_df.reset_index(inplace=True)
+            rows_with_total = long_df[
+                long_df.applymap(
+                    lambda x: True if isinstance(x, str) and "total" in x.lower() else False
+                ).any(1) # FutureWarning: In a future version of pandas all arguments of DataFrame.any and Series.any will be keyword-only.
+            ].index.tolist()
+            for row in rows_with_total:
+                worksheet.set_row(
+                    row + 1, None, border_format
+                )  # Show where samples end (row total) with border and bold format
 
 
-##### FORMATTING ####
-# Left-adjust cells
-align_cells = workbook.add_format()
-align_cells.set_align("left")
-
-# Formats
-bold_format = workbook.add_format({"bold": "True"})  # header and index
-border_format = workbook.add_format({"bottom": 1, "bold": "True"})
-
-for worksheet in workbook.worksheets():
-    worksheet.set_column("A:A", 25, bold_format)  # width of cell
-    worksheet.set_row(0, 15, bold_format)  # default row height
-    worksheet.freeze_panes(1, 1)
-
-    if worksheet.get_name() == "qc":
-        worksheet.set_column("F:F", 20)
-        worksheet.set_column("H:H", 15)
-        worksheet.set_column("J:J", 15)
-
-    if worksheet.get_name() == "emu_long":
-        worksheet.set_column("B:B", 25)
-
-        long_df.reset_index(inplace=True)
-        rows_with_total = long_df[
-            long_df.applymap(
-                lambda x: True if isinstance(x, str) and "total" in x.lower() else False
-            ).any(1)
-        ].index.tolist()
-        for row in rows_with_total:
-            worksheet.set_row(
-                row + 1, None, border_format
-            )  # Show where samples end (row total) with border and bold format
-
-writer.save()  # writer.save() # Will be removed in a future version
