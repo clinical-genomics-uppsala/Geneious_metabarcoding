@@ -27,6 +27,7 @@ else:
 
 EMUFOLDER = os.getcwd()
 
+
 ##### READING #####
 
 
@@ -61,9 +62,9 @@ def sort_samples(df, sortabund):
         qc = pd.DataFrame(qc, columns=["#assigned"])
         qc["#unassigned"] = unassigned
 
-        df = df.append(
-            unassigned
-        )  # The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+        df = pd.concat([df,
+            unassigned.to_frame().T]
+        )
 
         return (df, qc)
 
@@ -133,13 +134,13 @@ long_df = long_df.drop(["tax_id"], axis=1)
 count_data = pd.read_csv(COUNT_FILE, sep="\t", header=0)
 count_data, qc = sort_samples(count_data, "yes")
 count_data.columns = (
-    count_data.columns.str.rsplit(".", 1).str[0].str.strip()
+    count_data.columns.str.rsplit(".", n=1).str[0].str.strip()
 )  # remove .fasta/.fastq
 
 # RELATIVE ABUNDANCE EMU - tsv
 ra_data = pd.read_csv(RA_FILE, sep="\t", header=0)
 ra_data = sort_samples(ra_data, "no")
-ra_data.columns = ra_data.columns.str.rsplit(".", 1).str[0].str.strip()
+ra_data.columns = ra_data.columns.str.rsplit(".", n=1).str[0].str.strip()
 ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abundance)
 
 # QC SHEET
@@ -148,7 +149,7 @@ qc_csv = pd.read_csv(CSV_FILE, sep=",", index_col=0, names=["#filtered"])
 # Assigned/unassigned from count sheet
 qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
 qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
-qc_csv.index = qc_csv.index.str.rsplit(".", 1).str[0].str.strip()
+qc_csv.index = qc_csv.index.str.rsplit(".", n=1).str[0].str.strip()
 
 # SOFTWARE SHEET
 versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
@@ -191,7 +192,6 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
         worksheet.freeze_panes(1, 1)
 
         for taxon in report_params['spiketaxa'].split(','):
-            print(taxon.strip().strip('"'), worksheet.get_name())
             worksheet.conditional_format(1, 1, len(long_df), len(count_data.columns), # (first_row, first_col, last_row, last_col)
                 {'type':     'text',
                 'criteria': 'containing',
@@ -208,7 +208,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
             rows_with_total = long_df[
                 long_df.applymap(
                     lambda x: True if isinstance(x, str) and "total" in x.lower() else False
-                ).any(1) # FutureWarning: In a future version of pandas all arguments of DataFrame.any and Series.any will be keyword-only.
+                ).any(axis=1)
             ].index.tolist()
             for row in rows_with_total:
                 worksheet.set_row(
