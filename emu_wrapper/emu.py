@@ -50,7 +50,7 @@ if config.getboolean("EMU", "outputUnclassified"):
 spikeTaxa = config["REPORT"]["spikeTaxa"]
 minReads = config["REPORT"]["minReads"]
 maxUnassignedProp = config["REPORT"]["maxUnassignedProp"]
-minCounts = config["REPORT"]["minCounts"]
+minCountsTaxa = config["REPORT"]["minCountsTaxa"]
 minAbundTot = config["REPORT"]["minAbundTot"]
 
 
@@ -109,8 +109,8 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
     # Add config params
     for section in config:
         confdict = dict(config[section])
-        for k, v in confdict.items():
-            writer.writerow([k, v])
+        for param, value in confdict.items():
+            writer.writerow([param, value])
 
     # Add data from containers
     writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
