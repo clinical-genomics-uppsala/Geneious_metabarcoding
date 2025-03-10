@@ -196,7 +196,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
     bold_format = workbook.add_format({"bold": "True"})  # header and index
     border_format = workbook.add_format({"bottom": 1, "bold": "True"})
     spike_format = workbook.add_format({"color": "orange"})
-    pass_cutoff_format = workbook.add_format({"color": "green"})
+    pass_cutoff_format = workbook.add_format({"color": "blue"})
     fail_cutoff_format = workbook.add_format({"color": "red"})
     fail_reads_format = workbook.add_format({"color": "red","bottom": 1})
 
@@ -232,7 +232,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
                     if long_df["species"][row] == "total":
                         total_row = row
                         print(f"Total row: {total_row}")
-                        if int(long_df["estimated counts"][total_row]) <= int(report_params['minreads']):
+                        if int(long_df["estimated counts"][total_row]) < int(report_params['minreads']):
                             print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['minreads']}")
                             format_rows(worksheet, total_row, fail_reads_format)
                             continue_sample = True
@@ -242,12 +242,13 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
                         unassigned_row = row
                         print(f"Unassigned row: {unassigned_row}")
                     
-                        if not continue_sample and row == unassigned_row:
+                for row in sample_rows:
+                    if not continue_sample and row == unassigned_row:
 
-                            if float(long_df["abundance total"][unassigned_row]) >= float(report_params['maxunassignedprop']):
-                                print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['maxunassignedprop']}")
-                                format_rows(worksheet, unassigned_row, fail_cutoff_format)
-                                continue_sample = True
+                        if float(long_df["abundance total"][unassigned_row]) >= float(report_params['maxunassignedprop']):
+                            print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['maxunassignedprop']}")
+                            format_rows(worksheet, unassigned_row, fail_cutoff_format)
+                            continue_sample = True
 
                 for row in sample_rows:
                     if not continue_sample and (row != unassigned_row and row != total_row): 
