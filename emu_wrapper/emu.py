@@ -32,6 +32,7 @@ emuImage = config["SOFTWARE"]["emuImage"]  # database included in image
 
 # Build Emu command
 seqType = config["EMU"]["seqType"]
+dataBase = os.path.join("/emu_database", config["EMU"]["dataBase"])
 minAbund = config["EMU"]["minAbund"]
 alignN = config["EMU"]["alignN"]
 batchK = config["EMU"]["batchK"]
@@ -133,6 +134,8 @@ if len(inFiles) > 0:
                 inFile,
                 "--type",
                 seqType,
+                "--db",
+                dataBase,
                 "--min-abundance",
                 minAbund,
                 "--N",
@@ -150,7 +153,6 @@ if len(inFiles) > 0:
         )
 else:
     sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
-
 
 # Krona plot
 kronaCmd = (
