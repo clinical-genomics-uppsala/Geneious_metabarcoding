@@ -7,6 +7,9 @@ import shutil
 import csv
 import gzip
 import configparser
+import datetime
+
+startTime = datetime.datetime.now()
 
 # Outfile to be imported to Geneious
 outFile = sys.argv[2]
@@ -225,3 +228,6 @@ for file in os.listdir(pathToData):
             os.path.join(pathToData, multiSampleOutput),
             os.path.join(pathToGeneiousData, outFile),
         )
+
+stopTime = datetime.datetime.now()
+print(f"Geneious_metabarcoding completed {stopTime.strftime('%Y-%m-%d %H:%M:%S')} taking {stopTime-startTime}. Processed {len(inFiles)} samples.")
