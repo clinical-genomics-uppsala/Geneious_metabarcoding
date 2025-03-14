@@ -8,6 +8,7 @@ import csv
 import gzip
 import configparser
 import datetime
+import posixpath
 
 startTime = datetime.datetime.now()
 
@@ -35,7 +36,7 @@ emuImage = config["SOFTWARE"]["emuImage"]  # database included in image
 
 # Build Emu command
 seqType = config["EMU"]["seqType"]
-dataBase = os.path.join("/emu_database", config["EMU"]["dataBase"])
+dataBase = posixpath.join("/emu_database", config["EMU"]["dataBase"])
 minAbund = config["EMU"]["minAbund"]
 alignN = config["EMU"]["alignN"]
 batchK = config["EMU"]["batchK"]
