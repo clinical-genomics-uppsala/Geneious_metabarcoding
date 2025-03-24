@@ -1,15 +1,15 @@
 :: Path to current directory to bundled optional files
-set pluginPath=%~dp0
+set plugin_path=%~dp0
 
 :: Output to Geneious
-set outFile=%2
+set outfile=%2
 
 :: Options from Geneious
-set pathToGeneiousData=%4
-set configFile=%6
-set pathToData=%8
+set path_to_geneious_data=%4
+set config_file=%6
+set path_to_data=%8
 
 
-python "%pluginPath%emu.py" -o %outFile% -g %pathToGeneiousData% -p %configFile% -f %pathToData%
+python "%plugin_path%emu.py" -o %outfile% -g %path_to_geneious_data% -p %config_file% -f %path_to_data%
 
 :: Wrapper Plugin Creator command line: -o emu_output.tsv -g [inputFolderName] [otherOptions]

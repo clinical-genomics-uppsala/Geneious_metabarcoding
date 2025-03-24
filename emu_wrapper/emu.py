@@ -10,53 +10,53 @@ import configparser
 import datetime
 import posixpath
 
-startTime = datetime.datetime.now()
+start_time = datetime.datetime.now()
 
 # Outfile to be imported to Geneious
-outFile = sys.argv[2]
+outfile = sys.argv[2]
 
 # Temporary Geneious folder. Example linux: /Users/user/Geneious 2022.1 Data/transient/1660719270002/x/8/
 # Example windows: D:\Geneious 2021.1 Data\transient\1677846391422\x\120
-pathToGeneiousData = sys.argv[4]
+path_to_geneious_data = sys.argv[4]
 
 # Config
 config = configparser.ConfigParser()
 config.read(sys.argv[6])
-pathToDocker = config["SOFTWARE"]["pathToDocker"]
+path_to_docker = config["SOFTWARE"]["path_to_docker"]
 
 # In/out data folder selected by user
-pathToData = sys.argv[8]
-mountPath = os.path.join(pathToData, ":/geneious")
+path_to_data = sys.argv[8]
+mount_path = os.path.join(path_to_data, ":/geneious")
 
 # Github version
-gitVersion = config["SOFTWARE"]["gitVersion"]
+git_version = config["SOFTWARE"]["git_version"]
 # Docker images
-kronaImage = config["SOFTWARE"]["kronaImage"]
-emuImage = config["SOFTWARE"]["emuImage"]  # database included in image
+krona_image = config["SOFTWARE"]["krona_image"]
+emu_image = config["SOFTWARE"]["emu_image"]  # database included in image
 
 # Build Emu command
-seqType = config["EMU"]["seqType"]
-dataBase = posixpath.join("/emu_database", config["EMU"]["dataBase"])
-minAbund = config["EMU"]["minAbund"]
-alignN = config["EMU"]["alignN"]
-batchK = config["EMU"]["batchK"]
-noThreads = config["EMU"]["noThreads"]
-emuBooleans = []
-if config.getboolean("EMU", "keepCounts"):
-    emuBooleans.append("--keep-counts")
-if config.getboolean("EMU", "keepFiles"):
-    emuBooleans.append("--keep-files")
-if config.getboolean("EMU", "keepReadAssignments"):
-    emuBooleans.append("--keep-read-assignments")
-if config.getboolean("EMU", "outputUnclassified"):
-    emuBooleans.append("--output-unclassified")
+seq_type = config["EMU"]["seq_type"]
+database = posixpath.join("/emu_database", config["EMU"]["database"])
+min_abund = config["EMU"]["min_abund"]
+align_n = config["EMU"]["align_n"]
+batch_k = config["EMU"]["batch_k"]
+no_threads = config["EMU"]["no_threads"]
+emu_booleans = []
+if config.getboolean("EMU", "keep_counts"):
+    emu_booleans.append("--keep-counts")
+if config.getboolean("EMU", "keep_files"):
+    emu_booleans.append("--keep-files")
+if config.getboolean("EMU", "keep_read_assignments"):
+    emu_booleans.append("--keep-read-assignments")
+if config.getboolean("EMU", "output_unclassified"):
+    emu_booleans.append("--output-unclassified")
 
 # Report
-spikeTaxa = config["REPORT"]["spikeTaxa"]
-minReads = config["REPORT"]["minReads"]
-maxUnassignedProp = config["REPORT"]["maxUnassignedProp"]
-minCountsTaxa = config["REPORT"]["minCountsTaxa"]
-minAbundTot = config["REPORT"]["minAbundTot"]
+spike_taxa = config["REPORT"]["spike_taxa"]
+min_reads = config["REPORT"]["min_reads"]
+max_unassigned_prop = config["REPORT"]["max_unassigned_prop"]
+min_counts_taxa = config["REPORT"]["min_counts_taxa"]
+min_abund_tot = config["REPORT"]["min_abund_tot"]
 
 
 def count_fasta(fastafile):
@@ -70,42 +70,42 @@ def count_fasta(fastafile):
 
 
 # List of fasta files in data folder, create csv
-inFiles = {}
-for file in os.listdir(pathToData):
+infiles = {}
+for file in os.listdir(path_to_data):
     if file.endswith((".fasta", ".fa", ".fasta.gz", ".fa.gz")):
-        inFiles[file.split(".")[0]] = "".join(["/geneious/", file])
+        infiles[file.split(".")[0]] = "".join(["/geneious/", file])
         # Must be linux format also in windows
 
         # Create CSV file with number of reads per fasta-file
-        with open(os.path.join(pathToData, "fasta.csv"), "a", newline="") as csvfile:
-            rowToWrite = [
+        with open(os.path.join(path_to_data, "fasta.csv"), "a", newline="") as csvfile:
+            row_to_write = [
                 file.split(".")[0],  # basename
-                count_fasta(os.path.join(pathToData, file)),
+                count_fasta(os.path.join(path_to_data, file)),
             ]
             writer = csv.writer(csvfile)
-            writer.writerow(rowToWrite)
+            writer.writerow(row_to_write)
 
 # Create CSV for software versions
-with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
+with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfile:
     writer = csv.writer(csvfile)
-    emuVersion = subprocess.run(
+    emu_version = subprocess.run(
         [
-            pathToDocker,
+            path_to_docker,
             "inspect",
             "--format",
             "'{{ index .Config.Labels \"version\"}}'",
-            emuImage,
+            emu_image,
         ],
         capture_output=True,
         text=True,
     )
-    kronaVersion = subprocess.run(
+    krona_version = subprocess.run(
         [
-            pathToDocker,
+            path_to_docker,
             "inspect",
             "--format",
             "'{{ index .Config.Labels \"version\"}}'",
-            kronaImage,
+            krona_image,
         ],
         capture_output=True,
         text=True,
@@ -118,117 +118,117 @@ with open(os.path.join(pathToData, "versions.csv"), "a", newline="") as csvfile:
             writer.writerow([param, value])
 
     # Add data from containers
-    writer.writerow(["emu_version", emuVersion.stdout.replace("'", "").strip()])
-    writer.writerow(["krona_version", kronaVersion.stdout.replace("'", "").strip()])
+    writer.writerow(["emu_version", emu_version.stdout.replace("'", "").strip()])
+    writer.writerow(["krona_version", krona_version.stdout.replace("'", "").strip()])
 
 
 # Run emu abundance for each sample
-if len(inFiles) > 0:
-    for sample, inFile in inFiles.items():
+if len(infiles) > 0:
+    for sample, infile in infiles.items():
         subprocess.run(
             [
-                pathToDocker,
+                path_to_docker,
                 "run",
                 "--rm",
                 "-v",
-                mountPath,
-                emuImage,
+                mount_path,
+                emu_image,
                 "emu",
                 "abundance",
-                inFile,
+                infile,
                 "--type",
-                seqType,
+                seq_type,
                 "--db",
-                dataBase,
+                database,
                 "--min-abundance",
-                minAbund,
+                min_abund,
                 "--N",
-                alignN,
+                align_n,
                 "--K",
-                batchK,
+                batch_k,
                 "--threads",
-                noThreads,
+                no_threads,
                 "--output-dir",
                 "/geneious",
                 "--output-basename",
                 sample,
             ]
-            + emuBooleans
-        )
+            + emu_booleans
+        , check=True)
 else:
-    sys.exit("No fasta files in " + pathToData + " (.fa/.fasta/.fa.gz./fasta.gz)")
+    sys.exit("No fasta files in " + path_to_data + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
 # Krona plot
-kronaCmd = (
+krona_cmd = (
     "ktImportTaxonomy -t 1 -m 14 -o /geneious/krona.html /geneious/*_rel-abundance.tsv"
 )
 subprocess.run(
     [
-        pathToDocker,
+        path_to_docker,
         "run",
         "--rm",
         "-v",
-        mountPath,
-        kronaImage,
+        mount_path,
+        krona_image,
         "/bin/bash",
         "-c",
-        kronaCmd,
+        krona_cmd,
     ]
-)
+, check=True)
 
 # Combine output and import in Geneious
 # Run emu combine-outputs for selected folder - both relative abundance and counts
-combineOutputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
+combine_outputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
 subprocess.run(
     [
-        pathToDocker,
+        path_to_docker,
         "run",
         "--rm",
         "-v",
-        mountPath,
-        emuImage,
+        mount_path,
+        emu_image,
         "/bin/bash",
         "-c",
-        combineOutputs,
+        combine_outputs,
     ]
-)
+, check=True)
 
 
 # Excel report
-makeReport = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
+make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
 subprocess.run(
     [
-        pathToDocker,
+        path_to_docker,
         "run",
         "--rm",
         "-v",
-        mountPath,
-        emuImage,
+        mount_path,
+        emu_image,
         "/bin/bash",
         "-c",
-        makeReport,
+        make_report,
     ]
-)
+, check=True)
 
 # Handle output files
-for file in os.listdir(pathToData):
+for file in os.listdir(path_to_data):
     # Compress intermediate files
     if file.endswith((".sam", ".fa", ".fasta")):
-        with open(os.path.join(pathToData, file), "rb") as f_in:
-            with gzip.open(str(os.path.join(pathToData, file) + ".gz"), "wb") as f_out:
+        with open(os.path.join(path_to_data, file), "rb") as f_in:
+            with gzip.open(str(os.path.join(path_to_data, file) + ".gz"), "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 f_in.close()
                 f_out.close()
-                os.remove(os.path.join(pathToData, file))
+                os.remove(os.path.join(path_to_data, file))
 
     # Copy combined output file to Geneious tmp folder
     if file.endswith("emu-combined-species-counts.tsv"):
-        multiSampleOutput = file
+        multi_sample_output = file
 
         shutil.copyfile(
-            os.path.join(pathToData, multiSampleOutput),
-            os.path.join(pathToGeneiousData, outFile),
+            os.path.join(path_to_data, multi_sample_output),
+            os.path.join(path_to_geneious_data, outfile),
         )
 
-stopTime = datetime.datetime.now()
-print(f"Geneious_metabarcoding completed {stopTime.strftime('%Y-%m-%d %H:%M:%S')} taking {stopTime-startTime}. Processed {len(inFiles)} samples.")
+stop_time = datetime.datetime.now()
+print(f"Geneious_metabarcoding completed {stop_time.strftime('%Y-%m-%d %H:%M:%S')} taking {stop_time-start_time}. Processed {len(infiles)} samples.")

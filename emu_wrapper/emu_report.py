@@ -27,7 +27,6 @@ else:
 
 EMUFOLDER = os.getcwd()
 
-
 ##### READING #####
 
 
@@ -168,9 +167,9 @@ def get_rows(df,content):
         ].index.tolist()
     return rows
 
-def format_rows(worksheet, row, format):
+def format_rows(worksheet, row, report_format):
     worksheet.set_row(  #row, height, cell_format, options
-        row + 1, None, format
+        row + 1, None, report_format
     )
 
 # From config
@@ -205,7 +204,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
         worksheet.set_row(0, 15, bold_format)  # default row height
         worksheet.freeze_panes(1, 1)
 
-        for taxon in report_params['spiketaxa'].split(','):
+        for taxon in report_params['spike_taxa'].split(','):
             worksheet.conditional_format(1, 1, len(long_df), len(count_data.columns), # (first_row, first_col, last_row, last_col)
                 {'type':     'text',
                 'criteria': 'containing',
@@ -223,7 +222,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
             for sample, path in sample_dict.items():
                 continue_sample = False
                 sample_rows = get_rows(long_df,sample)
-                print(f"Processing sample: {sample} with {sample_rows} rows")
+                #print(f"Processing sample: {sample} with {sample_rows} rows")
 
                 total_row = None
                 unassigned_row = None
@@ -231,33 +230,33 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
                 for row in sample_rows:
                     if long_df["species"][row] == "total":
                         total_row = row
-                        print(f"Total row: {total_row}")
-                        if int(long_df["estimated counts"][total_row]) < int(report_params['minreads']):
-                            print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['minreads']}")
+                        #print(f"Total row: {total_row}")
+                        if int(long_df["estimated counts"][total_row]) < int(report_params['min_reads']):
+                            #print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['min_reads']}")
                             format_rows(worksheet, total_row, fail_reads_format)
                             continue_sample = True
                         else:
                             format_rows(worksheet, total_row, border_format) # mark last row
                     elif long_df["species"][row] == "unassigned":
                         unassigned_row = row
-                        print(f"Unassigned row: {unassigned_row}")
+                        #print(f"Unassigned row: {unassigned_row}")
                     
                 for row in sample_rows:
                     if not continue_sample and row == unassigned_row:
 
-                        if float(long_df["abundance total"][unassigned_row]) >= float(report_params['maxunassignedprop']):
-                            print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['maxunassignedprop']}")
+                        if float(long_df["abundance total"][unassigned_row]) >= float(report_params['max_unassigned_prop']):
+                            #print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['max_unassigned_prop']}")
                             format_rows(worksheet, unassigned_row, fail_cutoff_format)
                             continue_sample = True
 
                 for row in sample_rows:
                     if not continue_sample and (row != unassigned_row and row != total_row): 
-                        if (float(long_df["abundance total"][row]) >= float(report_params['minabundtot'])) and (float(long_df["estimated counts"][row])) >= int(report_params['mincountstaxa']):
-                            print(f"Abundance total {long_df['abundance total'][row]} is greater than {report_params['minabundtot']}")
+                        if (float(long_df["abundance total"][row]) >= float(report_params['min_abund_tot'])) and (float(long_df["estimated counts"][row])) >= int(report_params['min_counts_taxa']):
+                            #print(f"Abundance total {long_df['abundance total'][row]} is greater than {report_params['min_abund_tot']}")
                             format_rows(worksheet, row, pass_cutoff_format)
                 
                 if continue_sample:
-                    print(f"Continuing to next sample due to conditions met in sample: {sample}")
+                    #print(f"Continuing to next sample due to conditions met in sample: {sample}")
                     continue
 
 
