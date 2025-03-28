@@ -154,7 +154,7 @@ if len(infiles) > 0:
                 sample,
             ]
             + emu_booleans
-        , check=True)
+        , check=False)
 else:
     sys.exit("No fasta files in " + path_to_data + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
@@ -174,7 +174,7 @@ subprocess.run(
         "-c",
         krona_cmd,
     ]
-, check=True)
+, check=False)
 
 # Combine output and import in Geneious
 # Run emu combine-outputs for selected folder - both relative abundance and counts
@@ -191,7 +191,7 @@ subprocess.run(
         "-c",
         combine_outputs,
     ]
-, check=True)
+, check=False)
 
 
 # Excel report
@@ -208,7 +208,7 @@ subprocess.run(
         "-c",
         make_report,
     ]
-, check=True)
+, check=False)
 
 # Handle output files
 for file in os.listdir(path_to_data):
