@@ -59,6 +59,15 @@ min_counts_taxa = config["REPORT"]["min_counts_taxa"]
 min_abund_tot = config["REPORT"]["min_abund_tot"]
 
 
+def run_subprocess(command):
+    with open(os.path.join(path_to_data, "log.txt"), "a", newline="") as log_file:
+        p = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
+        (output, error) = p.communicate()
+        p_status = p.wait()
+        log_file.write(f"Exit status: {p_status} \n")
+    return output
+
+
 def count_fasta(fastafile):
     if fastafile.endswith(".gz"):
         with gzip.open(fastafile, "rt") as file:
@@ -125,62 +134,59 @@ with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfil
 # Run emu abundance for each sample
 if len(infiles) > 0:
     for sample, infile in infiles.items():
-        subprocess.run(
-            [
-                path_to_docker,
-                "run",
-                "--rm",
-                "-v",
-                mount_path,
-                emu_image,
-                "emu",
-                "abundance",
-                infile,
-                "--type",
-                seq_type,
-                "--db",
-                database,
-                "--min-abundance",
-                min_abund,
-                "--N",
-                align_n,
-                "--K",
-                batch_k,
-                "--threads",
-                no_threads,
-                "--output-dir",
-                "/geneious",
-                "--output-basename",
-                sample,
-            ]
-            + emu_booleans
-        , check=False)
+        emu_abundance = [
+            path_to_docker,
+            "run",
+            "--rm",
+            "-v",
+            mount_path,
+            emu_image,
+            "emu",
+            "abundance",
+            infile,
+            "--type",
+            seq_type,
+            "--db",
+            database,
+            "--min-abundance",
+            min_abund,
+            "--N",
+            align_n,
+            "--K",
+            batch_k,
+            "--threads",
+            no_threads,
+            "--output-dir",
+            "/geneious",
+            "--output-basename",
+            sample,
+        ]
+        emu_abundance.extend(emu_booleans)
+        run_subprocess(emu_abundance)
 else:
     sys.exit("No fasta files in " + path_to_data + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
 # Krona plot
-krona_cmd = (
+krona_import_taxonomy = (
     "ktImportTaxonomy -t 1 -m 14 -o /geneious/krona.html /geneious/*_rel-abundance.tsv"
 )
-subprocess.run(
-    [
-        path_to_docker,
-        "run",
-        "--rm",
-        "-v",
-        mount_path,
-        krona_image,
-        "/bin/bash",
-        "-c",
-        krona_cmd,
-    ]
-, check=False)
+krona_subprocess = [
+    path_to_docker,
+    "run",
+    "--rm",
+    "-v",
+    mount_path,
+    krona_image,
+    "/bin/bash",
+    "-c",
+    krona_import_taxonomy,
+]
+run_subprocess(krona_subprocess)
 
 # Combine output and import in Geneious
 # Run emu combine-outputs for selected folder - both relative abundance and counts
-combine_outputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
-subprocess.run(
-    [
+emu_combine_outputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
+combine_outputs_subprocess = [
         path_to_docker,
         "run",
         "--rm",
@@ -189,15 +195,13 @@ subprocess.run(
         emu_image,
         "/bin/bash",
         "-c",
-        combine_outputs,
+        emu_combine_outputs,
     ]
-, check=False)
-
+run_subprocess(combine_outputs_subprocess)
 
 # Excel report
 make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
-subprocess.run(
-    [
+report_subprocess = [
         path_to_docker,
         "run",
         "--rm",
@@ -208,14 +212,16 @@ subprocess.run(
         "-c",
         make_report,
     ]
-, check=False)
+run_subprocess(combine_outputs_subprocess)
 
 # Handle output files
 for file in os.listdir(path_to_data):
     # Compress intermediate files
     if file.endswith((".sam", ".fa", ".fasta")):
         with open(os.path.join(path_to_data, file), "rb") as f_in:
-            with gzip.open(str(os.path.join(path_to_data, file) + ".gz"), "wb") as f_out:
+            with gzip.open(
+                str(os.path.join(path_to_data, file) + ".gz"), "wb"
+            ) as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 f_in.close()
                 f_out.close()
@@ -231,4 +237,6 @@ for file in os.listdir(path_to_data):
         )
 
 stop_time = datetime.datetime.now()
-print(f"Geneious_metabarcoding completed {stop_time.strftime('%Y-%m-%d %H:%M:%S')} taking {stop_time-start_time}. Processed {len(infiles)} samples.")
+print(
+    f"Geneious_metabarcoding completed {stop_time.strftime('%Y-%m-%d %H:%M:%S')} taking {stop_time - start_time}. Processed {len(infiles)} samples."
+)
