@@ -59,13 +59,13 @@ min_counts_taxa = config["REPORT"]["min_counts_taxa"]
 min_abund_tot = config["REPORT"]["min_abund_tot"]
 
 
-def run_subprocess(command):
-    with open(os.path.join(path_to_data, "log.txt"), "a", newline="") as log_file:
-        p = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT)
-        (output, error) = p.communicate()
-        p_status = p.wait()
-        log_file.write(f"Exit status: {p_status} \n")
-    return output
+def run_subprocess(command, name):
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    print(p.stdout.read().decode())
+    (output, error) = p.communicate()
+    p_status = p.wait()
+    print(f"{name} exit status: {p_status} \n")
+    return output, p_status
 
 
 def count_fasta(fastafile):
@@ -132,6 +132,7 @@ with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfil
 
 
 # Run emu abundance for each sample
+error_counter = 0
 if len(infiles) > 0:
     for sample, infile in infiles.items():
         emu_abundance = [
@@ -162,7 +163,8 @@ if len(infiles) > 0:
             sample,
         ]
         emu_abundance.extend(emu_booleans)
-        run_subprocess(emu_abundance)
+        if run_subprocess(emu_abundance, "emu_abundance")[1] != 0:
+            error_counter += 1
 else:
     sys.exit("No fasta files in " + path_to_data + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
@@ -181,7 +183,8 @@ krona_subprocess = [
     "-c",
     krona_import_taxonomy,
 ]
-run_subprocess(krona_subprocess)
+if run_subprocess(krona_subprocess, "krona")[1] != 0:
+    error_counter += 1
 
 # Combine output and import in Geneious
 # Run emu combine-outputs for selected folder - both relative abundance and counts
@@ -197,7 +200,8 @@ combine_outputs_subprocess = [
         "-c",
         emu_combine_outputs,
     ]
-run_subprocess(combine_outputs_subprocess)
+if run_subprocess(combine_outputs_subprocess, "combine_outputs")[1] != 0:
+    error_counter += 1
 
 # Excel report
 make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
@@ -212,7 +216,8 @@ report_subprocess = [
         "-c",
         make_report,
     ]
-run_subprocess(combine_outputs_subprocess)
+if run_subprocess(report_subprocess, "report")[1] != 0:
+    error_counter += 1
 
 # Handle output files
 for file in os.listdir(path_to_data):
@@ -240,3 +245,4 @@ stop_time = datetime.datetime.now()
 print(
     f"Geneious_metabarcoding completed {stop_time.strftime('%Y-%m-%d %H:%M:%S')} taking {stop_time - start_time}. Processed {len(infiles)} samples."
 )
+print(f"There were {error_counter} errors")
