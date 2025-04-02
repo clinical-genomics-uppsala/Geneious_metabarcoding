@@ -22,14 +22,14 @@ path_to_geneious_data = sys.argv[4]
 # Config
 config = configparser.ConfigParser()
 config.read(sys.argv[6])
+config_dict = {s:dict(config.items(s)) for s in config.sections()}
+
 path_to_docker = config["SOFTWARE"]["path_to_docker"]
 
 # In/out data folder selected by user
 path_to_data = sys.argv[8]
 mount_path = os.path.join(path_to_data, ":/geneious")
 
-# Github version
-git_version = config["SOFTWARE"]["git_version"]
 # Docker images
 krona_image = config["SOFTWARE"]["krona_image"]
 emu_image = config["SOFTWARE"]["emu_image"]  # database included in image
@@ -51,19 +51,12 @@ if config.getboolean("EMU", "keep_read_assignments"):
 if config.getboolean("EMU", "output_unclassified"):
     emu_booleans.append("--output-unclassified")
 
-# Report
-spike_taxa = config["REPORT"]["spike_taxa"]
-min_reads = config["REPORT"]["min_reads"]
-max_unassigned_prop = config["REPORT"]["max_unassigned_prop"]
-min_counts_taxa = config["REPORT"]["min_counts_taxa"]
-min_abund_tot = config["REPORT"]["min_abund_tot"]
-
 
 def run_subprocess(command, name):
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    print(p.stdout.read().decode())
     (output, error) = p.communicate()
     p_status = p.wait()
+    print(output.decode())
     print(f"{name} exit status: {p_status} \n")
     return output, p_status
 
@@ -121,9 +114,8 @@ with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfil
     )
 
     # Add config params
-    for section in config:
-        confdict = dict(config[section])
-        for param, value in confdict.items():
+    for section, params in config_dict.items():
+        for param, value in params.items():
             writer.writerow([param, value])
 
     # Add data from containers
