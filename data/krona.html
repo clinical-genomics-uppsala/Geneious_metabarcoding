@@ -6084,10 +6084,10 @@ function snapshot()
 	snapshotMode = false;
 	
 	svg += svgFooter();
-	var dataUri = 'data:image/svg+xml,' + encodeURIComponent(svg)
-	var string = '<html><body><iframe src="' + dataUri + '" frameborder="0" style="position:absolute; border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe><a style="position:absolute" href="' + dataUri + '" download="snapshot.svg">Download Snapshot</a></html></body>';
-    var win = window.open();
-    win.document.write(string)
+	
+	var snapshotWindow = window.open('', '_blank', '', 'replace=false');
+	snapshotWindow.document.write('<html><body><a href="data:image/svg+xml,' + encodeURIComponent(svg) + '" download="snapshot.svg">Download Snapshot</a></html></body>');
+	snapshotWindow.document.write(svg);
 }
 
 function save()
@@ -6636,47 +6636,95 @@ function zoomOut()
    </datasets>
    <color attribute="score" hueStart="0" hueEnd="120" valueStart="0" valueEnd="0" default="false" ></color>
 <node name="Root">
+ <magnitude><val>2700</val><val>2000</val><val>1000</val><val>1635</val><val>109</val></magnitude>
  <magnitudeUnassigned><val></val><val></val><val></val><val></val><val>2.77324841105786</val></magnitudeUnassigned>
- <magnitude><val>2700</val><val>2533</val><val>2791</val><val>1598</val><val>9</val></magnitude>
  <node name="No hits">
-  <magnitude><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></magnitude>
+  <magnitude><val>0</val><val>0</val><val>0</val><val>1500</val><val>100</val></magnitude>
   <score><val>0</val></score>
  </node>
  <node name="Bacteria">
-  <magnitude><val>2700</val><val>2533</val><val>2791</val><val>1598</val><val>6.22675158894214</val></magnitude>
+  <magnitude><val>2700</val><val>2000</val><val>1000</val><val>135</val><val>6.22675158894214</val></magnitude>
   <rank><val>superkingdom</val></rank>
-  <taxon><val href="2">2</val></taxon>
   <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+  <taxon><val href="2">2</val></taxon>
+  <node name="FCB group">
+   <rank><val>clade</val></rank>
+   <magnitude><val></val><val>2000</val></magnitude>
+   <score><val>0</val><val>0</val></score>
+   <taxon><val href="1783270">1783270</val></taxon>
+   <node name="Bacteroidota/Chlorobiota group">
+    <taxon><val href="68336">68336</val></taxon>
+    <rank><val>clade</val></rank>
+    <magnitude><val></val><val>2000</val></magnitude>
+    <score><val>0</val><val>0</val></score>
+    <node name="Bacteroidota">
+     <taxon><val href="976">976</val></taxon>
+     <score><val>0</val><val>0</val></score>
+     <magnitude><val></val><val>2000</val></magnitude>
+     <rank><val>phylum</val></rank>
+     <node name="Flavobacteriia">
+      <magnitude><val></val><val>2000</val></magnitude>
+      <rank><val>class</val></rank>
+      <score><val>0</val><val>0</val></score>
+      <taxon><val href="117743">117743</val></taxon>
+      <node name="Flavobacteriales">
+       <rank><val>order</val></rank>
+       <magnitude><val></val><val>2000</val></magnitude>
+       <score><val>0</val><val>0</val></score>
+       <taxon><val href="200644">200644</val></taxon>
+       <node name="Flavobacteriaceae">
+        <score><val>0</val><val>0</val></score>
+        <magnitude><val></val><val>2000</val></magnitude>
+        <rank><val>family</val></rank>
+        <taxon><val href="49546">49546</val></taxon>
+        <node name="Imtechella">
+         <taxon><val href="1165076">1165076</val></taxon>
+         <score><val>0</val><val>0</val></score>
+         <rank><val>genus</val></rank>
+         <magnitude><val></val><val>2000</val></magnitude>
+         <node name="Imtechella halotolerans">
+          <taxon><val href="1165090">1165090</val></taxon>
+          <rank><val>species</val></rank>
+          <magnitude><val></val><val>2000</val></magnitude>
+          <score><val>0</val><val>0</val></score>
+         </node>
+        </node>
+       </node>
+      </node>
+     </node>
+    </node>
+   </node>
+  </node>
   <node name="Pseudomonadota">
-   <rank><val>phylum</val></rank>
-   <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
    <taxon><val href="1224">1224</val></taxon>
+   <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
+   <rank><val>phylum</val></rank>
    <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
    <node name="Gammaproteobacteria">
-    <taxon><val href="1236">1236</val></taxon>
-    <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
-    <rank><val>class</val></rank>
     <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+    <rank><val>class</val></rank>
+    <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
+    <taxon><val href="1236">1236</val></taxon>
     <node name="Enterobacterales">
-     <rank><val>order</val></rank>
-     <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
-     <taxon><val href="91347">91347</val></taxon>
      <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+     <rank><val>order</val></rank>
+     <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
+     <taxon><val href="91347">91347</val></taxon>
      <node name="Enterobacteriaceae">
       <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-      <taxon><val href="543">543</val></taxon>
-      <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
       <rank><val>family</val></rank>
+      <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
+      <taxon><val href="543">543</val></taxon>
       <node name="Escherichia">
-       <taxon><val href="561">561</val></taxon>
-       <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
-       <rank><val>genus</val></rank>
        <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+       <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
+       <rank><val>genus</val></rank>
+       <taxon><val href="561">561</val></taxon>
        <node name="Escherichia coli">
         <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-        <taxon><val href="562">562</val></taxon>
+        <magnitude><val></val><val></val><val>50</val><val>100</val></magnitude>
         <rank><val>species</val></rank>
-        <magnitude><val></val><val>2533</val><val></val><val>1414</val></magnitude>
+        <taxon><val href="562">562</val></taxon>
        </node>
       </node>
      </node>
@@ -6685,23 +6733,83 @@ function zoomOut()
   </node>
   <node name="Terrabacteria group">
    <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-   <magnitude><val>2700</val><val></val><val>2791</val><val>184</val><val>6.22675158894214</val></magnitude>
    <rank><val>clade</val></rank>
+   <magnitude><val>2700</val><val></val><val>950</val><val>35</val><val>6.22675158894214</val></magnitude>
    <taxon><val href="1783272">1783272</val></taxon>
+   <node name="Bacillota">
+    <taxon><val href="1239">1239</val></taxon>
+    <magnitude><val>2700</val><val></val><val>950</val><val>35</val><val>2.22675158894214</val></magnitude>
+    <rank><val>phylum</val></rank>
+    <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+    <node name="Bacilli">
+     <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+     <rank><val>class</val></rank>
+     <magnitude><val>2700</val><val></val><val>950</val><val>35</val><val>2.22675158894214</val></magnitude>
+     <taxon><val href="91061">91061</val></taxon>
+     <node name="Bacillales">
+      <taxon><val href="1385">1385</val></taxon>
+      <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+      <rank><val>order</val></rank>
+      <magnitude><val>2700</val><val></val><val>950</val><val>35</val><val>2.22675158894214</val></magnitude>
+      <node name="Staphylococcaceae">
+       <taxon><val href="90964">90964</val></taxon>
+       <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+       <magnitude><val>2700</val><val></val><val>950</val><val>35</val></magnitude>
+       <rank><val>family</val></rank>
+       <node name="Staphylococcus">
+        <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+        <rank><val>genus</val></rank>
+        <magnitude><val>2700</val><val></val><val>950</val><val>35</val></magnitude>
+        <taxon><val href="1279">1279</val></taxon>
+        <node name="Staphylococcus aureus">
+         <magnitude><val></val><val></val><val>950</val><val>10</val></magnitude>
+         <rank><val>species</val></rank>
+         <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+         <taxon><val href="1280">1280</val></taxon>
+        </node>
+        <node name="Staphylococcus epidermidis">
+         <magnitude><val>2700</val><val></val><val></val><val>25</val></magnitude>
+         <rank><val>species</val></rank>
+         <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
+         <taxon><val href="1282">1282</val></taxon>
+        </node>
+       </node>
+      </node>
+      <node name="Bacillaceae">
+       <rank><val>family</val></rank>
+       <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
+       <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+       <taxon><val href="186817">186817</val></taxon>
+       <node name="Priestia">
+        <taxon><val href="2800373">2800373</val></taxon>
+        <rank><val>genus</val></rank>
+        <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
+        <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+        <node name="Priestia megaterium">
+         <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+         <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
+         <rank><val>species</val></rank>
+         <taxon><val href="1404">1404</val></taxon>
+        </node>
+       </node>
+      </node>
+     </node>
+    </node>
+   </node>
    <node name="Actinomycetota">
     <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-    <taxon><val href="201174">201174</val></taxon>
-    <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
     <rank><val>phylum</val></rank>
+    <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
+    <taxon><val href="201174">201174</val></taxon>
     <node name="Actinomycetes">
-     <taxon><val href="1760">1760</val></taxon>
-     <rank><val>class</val></rank>
      <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
+     <rank><val>class</val></rank>
      <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
+     <taxon><val href="1760">1760</val></taxon>
      <node name="Micrococcales">
-      <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-      <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
       <rank><val>order</val></rank>
+      <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
+      <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
       <taxon><val href="85006">85006</val></taxon>
       <node name="Microbacteriaceae">
        <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
@@ -6709,75 +6817,15 @@ function zoomOut()
        <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
        <taxon><val href="85023">85023</val></taxon>
        <node name="Leucobacter">
-        <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
-        <rank><val>genus</val></rank>
         <taxon><val href="55968">55968</val></taxon>
+        <rank><val>genus</val></rank>
+        <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
         <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
         <node name="Leucobacter aridicollis">
-         <taxon><val href="283878">283878</val></taxon>
+         <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
          <rank><val>species</val></rank>
          <magnitude><val></val><val></val><val></val><val></val><val>4</val></magnitude>
-         <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-        </node>
-       </node>
-      </node>
-     </node>
-    </node>
-   </node>
-   <node name="Bacillota">
-    <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-    <taxon><val href="1239">1239</val></taxon>
-    <rank><val>phylum</val></rank>
-    <magnitude><val>2700</val><val></val><val>2791</val><val>184</val><val>2.22675158894214</val></magnitude>
-    <node name="Bacilli">
-     <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-     <taxon><val href="91061">91061</val></taxon>
-     <rank><val>class</val></rank>
-     <magnitude><val>2700</val><val></val><val>2791</val><val>184</val><val>2.22675158894214</val></magnitude>
-     <node name="Bacillales">
-      <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-      <magnitude><val>2700</val><val></val><val>2791</val><val>184</val><val>2.22675158894214</val></magnitude>
-      <rank><val>order</val></rank>
-      <taxon><val href="1385">1385</val></taxon>
-      <node name="Bacillaceae">
-       <rank><val>family</val></rank>
-       <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
-       <taxon><val href="186817">186817</val></taxon>
-       <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-       <node name="Priestia">
-        <taxon><val href="2800373">2800373</val></taxon>
-        <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
-        <rank><val>genus</val></rank>
-        <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-        <node name="Priestia megaterium">
-         <score><val>0</val><val>0</val><val>0</val><val>0</val><val>0</val></score>
-         <rank><val>species</val></rank>
-         <magnitude><val></val><val></val><val></val><val></val><val>2.22675158894214</val></magnitude>
-         <taxon><val href="1404">1404</val></taxon>
-        </node>
-       </node>
-      </node>
-      <node name="Staphylococcaceae">
-       <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-       <magnitude><val>2700</val><val></val><val>2791</val><val>184</val></magnitude>
-       <rank><val>family</val></rank>
-       <taxon><val href="90964">90964</val></taxon>
-       <node name="Staphylococcus">
-        <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-        <magnitude><val>2700</val><val></val><val>2791</val><val>184</val></magnitude>
-        <rank><val>genus</val></rank>
-        <taxon><val href="1279">1279</val></taxon>
-        <node name="Staphylococcus epidermidis">
-         <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-         <taxon><val href="1282">1282</val></taxon>
-         <rank><val>species</val></rank>
-         <magnitude><val>2700</val><val></val><val></val><val>108.248891927614</val></magnitude>
-        </node>
-        <node name="Staphylococcus aureus">
-         <score><val>0</val><val>0</val><val>0</val><val>0</val></score>
-         <taxon><val href="1280">1280</val></taxon>
-         <rank><val>species</val></rank>
-         <magnitude><val></val><val></val><val>2791</val><val>75.7511080723864</val></magnitude>
+         <taxon><val href="283878">283878</val></taxon>
         </node>
        </node>
       </node>

@@ -3,7 +3,7 @@
 [Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [Emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences using the emu standard database. The emu database is "a combination of rrnDB v5.6 and NCBI 16S RefSeq from 17 September, 2020. Taxonomy is also from NCBI on the same date. The resulting database contains 49,301 sequences from 17,555 unique bacterial and archaeal species". Post-processing includes Krona plots and a report in excel format.
 
 Input: FASTQ files. Sample file names should preferably start with barcode no: 01, 02.. or with barcode49, barcode27. Sample names should not contain any spaces, dots or special characters (å/ä/ö etc).  
-Main outputs: [Krona plots](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/krona.html) and [Excel report](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/main/data/emu.xlsx) for each run.
+Main outputs: [Krona plots](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/log_file/data/krona.html) and [Excel report](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/log_file/data/emu.xlsx) for each run.
 
 ## System requirements
 The workflow is tested on Windows and Mac, but may work on Linux.
@@ -91,7 +91,7 @@ Transfer docker image to another computer
 
 # Running the workflow
 
-1. Adapt the [config file](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/blob/params/emu_wrapper/config.ini), example:
+1. Adapt the [config file](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/log_file/emu_wrapper/config.ini), example:
 
 ```
 [SOFTWARE]
@@ -119,11 +119,11 @@ These parameters control formatting of the excel report:
 [REPORT]
 spike_taxa = "Imtechella halotolerans", "Allobacillus halotolerans", "Truepera radiovictrix"	# cells will be highlighted in orange in report
 min_reads = 1000				# if the total number of reads in a sample is fewer than this value, sample total row => red
-max_unassigned_prop = 0.9		# if the proportion of reads classified as "unassigned" is larger than this value, sample total row => red
+max_unassigned_prop = 0.9		# if the proportion of reads classified as "unassigned" is larger than this value, sample unassigned row => red
 min_counts_taxa = 50			# if the number of reads is larger than this value for a taxon in a sample, the row => blue
 min_abund_tot = 0.01			# if the proportion of reads for a taxon is larger than this value for a taxon in a sample, the row => blue
 ```
 
 2. Import the FASTQ files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.  
 ![Options when starting the workflow](images/startWorkflow.png?raw=true)  
- 'Export to Folder' and 'Data path' must point to the same folder which should not contain any FASTA files (.fa/.fa.gz/.fasta/.fasta.gz) already. In Geneious, the output will be a log file. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report.
+ 'Export to Folder' and 'Data path' must point to the same folder which should not contain any FASTA files (.fa/.fa.gz/.fasta/.fasta.gz) already. In Geneious, the output will be a log file. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report. See example output from a [small toy dataset](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/log_file/data/).
