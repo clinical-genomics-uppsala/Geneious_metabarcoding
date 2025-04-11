@@ -11,6 +11,7 @@ import datetime
 import posixpath
 
 start_time = datetime.datetime.now()
+error_counter = 0
 
 # Outfile to be imported to Geneious
 outfile = sys.argv[2]
@@ -22,7 +23,7 @@ path_to_geneious_data = sys.argv[4]
 # Config
 config = configparser.ConfigParser()
 config.read(sys.argv[6])
-config_dict = {s:dict(config.items(s)) for s in config.sections()}
+config_dict = {s: dict(config.items(s)) for s in config.sections()}
 
 path_to_docker = config["SOFTWARE"]["path_to_docker"]
 
@@ -53,6 +54,7 @@ if config.getboolean("EMU", "output_unclassified"):
 
 
 def run_subprocess(command, name):
+    """Run subprocess command, print stdout, stderr, process name and exit status"""
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     (output, error) = p.communicate()
     p_status = p.wait()
@@ -61,7 +63,22 @@ def run_subprocess(command, name):
     return output, p_status
 
 
+def get_version(image, software_version_cmd, name):
+    """Get version from software in docker container, print stderr, process name and exit status"""
+    command = f"{path_to_docker} run --rm {image} " + " ".join(software_version_cmd)
+    p = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+    (output, error) = p.communicate()
+    p_status = p.wait()
+    print(error.decode())
+    print(f"{name} exit status: {p_status} \n")
+    version = [name, output.decode().strip()]
+    return version, p_status
+
+
 def count_fasta(fastafile):
+    """Return the number of sequences in a (compresesed) fasta file"""
     if fastafile.endswith(".gz"):
         with gzip.open(fastafile, "rt") as file:
             no_fasta = sum(1 for line in file.read() if line.startswith(">"))
@@ -71,47 +88,49 @@ def count_fasta(fastafile):
     return no_fasta
 
 
-# List of fasta files in data folder, create csv
+# List fasta files in data folder, create fasta.csv
 infiles = {}
-for file in os.listdir(path_to_data):
-    if file.endswith((".fasta", ".fa", ".fasta.gz", ".fa.gz")):
-        infiles[file.split(".")[0]] = "".join(["/geneious/", file])
-        # Must be linux format also in windows
+with open(os.path.join(path_to_data, "fasta.csv"), "a", newline="") as csvfile:
+    for file in os.listdir(path_to_data):
+        if file.endswith((".fasta", ".fa", ".fasta.gz", ".fa.gz")):
+            infiles[file.split(".")[0]] = "".join(["/geneious/", file])
+            # Must be linux format also in windows
 
-        # Create CSV file with number of reads per fasta-file
-        with open(os.path.join(path_to_data, "fasta.csv"), "a", newline="") as csvfile:
+            # Write CSV file with number of reads per fasta file
             row_to_write = [
-                file.split(".")[0],  # basename
+                file.split(".")[0],
                 count_fasta(os.path.join(path_to_data, file)),
             ]
             writer = csv.writer(csvfile)
             writer.writerow(row_to_write)
 
-# Create CSV for software versions
+# Get software versions
+emu_version = get_version(emu_image, ["emu", "--version"], "emu_version")
+krona_version = get_version(
+    krona_image,
+    [
+        "ktImportTaxonomy",
+        "|",
+        "grep",
+        "'KronaTools'",
+        "|",
+        "sed",
+        "'s/^.*KronaTools",
+        "//g;",
+        "s/",
+        "-",
+        "ktImportTaxonomy.*//g'",
+    ],
+    "krona_version",
+)
+if emu_version[1] != 0:
+            error_counter += 1
+if krona_version[1] != 0:
+            error_counter += 1
+
+# Write versions.csv
 with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfile:
     writer = csv.writer(csvfile)
-    emu_version = subprocess.run(
-        [
-            path_to_docker,
-            "inspect",
-            "--format",
-            "'{{ index .Config.Labels \"version\"}}'",
-            emu_image,
-        ],
-        capture_output=True,
-        text=True,
-    )
-    krona_version = subprocess.run(
-        [
-            path_to_docker,
-            "inspect",
-            "--format",
-            "'{{ index .Config.Labels \"version\"}}'",
-            krona_image,
-        ],
-        capture_output=True,
-        text=True,
-    )
 
     # Add config params
     for section, params in config_dict.items():
@@ -119,12 +138,11 @@ with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfil
             writer.writerow([param, value])
 
     # Add data from containers
-    writer.writerow(["emu_version", emu_version.stdout.replace("'", "").strip()])
-    writer.writerow(["krona_version", krona_version.stdout.replace("'", "").strip()])
+    writer.writerow(emu_version[0])
+    writer.writerow(krona_version[0])
 
 
 # Run emu abundance for each sample
-error_counter = 0
 if len(infiles) > 0:
     for sample, infile in infiles.items():
         emu_abundance = [
@@ -182,32 +200,32 @@ if run_subprocess(krona_subprocess, "krona")[1] != 0:
 # Run emu combine-outputs for selected folder - both relative abundance and counts
 emu_combine_outputs = "emu combine-outputs /geneious species; emu combine-outputs --counts /geneious species"
 combine_outputs_subprocess = [
-        path_to_docker,
-        "run",
-        "--rm",
-        "-v",
-        mount_path,
-        emu_image,
-        "/bin/bash",
-        "-c",
-        emu_combine_outputs,
-    ]
+    path_to_docker,
+    "run",
+    "--rm",
+    "-v",
+    mount_path,
+    emu_image,
+    "/bin/bash",
+    "-c",
+    emu_combine_outputs,
+]
 if run_subprocess(combine_outputs_subprocess, "combine_outputs")[1] != 0:
     error_counter += 1
 
 # Excel report
 make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
 report_subprocess = [
-        path_to_docker,
-        "run",
-        "--rm",
-        "-v",
-        mount_path,
-        emu_image,
-        "/bin/bash",
-        "-c",
-        make_report,
-    ]
+    path_to_docker,
+    "run",
+    "--rm",
+    "-v",
+    mount_path,
+    emu_image,
+    "/bin/bash",
+    "-c",
+    make_report,
+]
 if run_subprocess(report_subprocess, "report")[1] != 0:
     error_counter += 1
 
