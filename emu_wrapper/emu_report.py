@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import pandas.io.formats.excel
 
-# import xlsxwriter
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None
 
@@ -18,21 +17,26 @@ if len(sys.argv) >= 5:
     OUTPUT_EXCEL = sys.argv[3]
     CSV_FILE = sys.argv[4]
     VERSION_FILE = sys.argv[5]
+    EMUFOLDER = os.getcwd()
+
+# Test data - execute report script in Geneious_metabarcoding folder: python emu_wrapper/emu_report.py
 else:
-    COUNT_FILE = "emu-combined-species-counts.tsv"
-    RA_FILE = "emu-combined-species.tsv"
-    OUTPUT_EXCEL = "emu.xlsx"
-    CSV_FILE = "fasta.csv"
-    VERSION_FILE = "versions.csv"
-
-EMUFOLDER = os.getcwd()
-
-##### READING #####
+    COUNT_FILE = "data/emu-combined-species-counts.tsv"
+    RA_FILE = "data/emu-combined-species.tsv"
+    OUTPUT_EXCEL = "data/emu.xlsx"
+    CSV_FILE = "data/fasta.csv"
+    VERSION_FILE = "data/versions.csv"
+    EMUFOLDER = "data"
 
 
-# Sort data frame by sample columns and most abundant taxa.
-# Sample names should start with barcode no: 01, 02, 03..... or with barcode49, barcode27 etc.
+##### READING EMU OUTPUT FILES #####
+
+
 def sort_samples(df, sortabund):
+    """Sort data frame columns by sample names and most abundant taxa.
+    Sample names should start with barcode no: 01, 02, 03; or with barcode49, barcode27 etc.
+    If count table is input df set sortabund=True and df is used to generate data to qc sheet.
+    """
     header = df.columns.values.tolist()
     taxonomy = [
         name for name in header if not name[0].isdigit() if "barcode" not in name
@@ -61,9 +65,7 @@ def sort_samples(df, sortabund):
         qc = pd.DataFrame(qc, columns=["#assigned"])
         qc["#unassigned"] = unassigned
 
-        df = pd.concat([df,
-            unassigned.to_frame().T]
-        )
+        df = pd.concat([df, unassigned.to_frame().T])
 
         return (df, qc)
 
@@ -84,7 +86,7 @@ sample_dict = dict(sorted(sample_dict.items()))  # sort by sample name
 # Append csv data to a list
 long_list = []
 for sample, file in sample_dict.items():
-    #print(sample, file)
+    # print(sample, file)
     emu_tab = pd.read_csv(file, sep="\t", header=0)
     emu_tab = emu_tab.sort_values(by=["estimated counts"], ascending=False)
 
@@ -146,43 +148,50 @@ ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abun
 # CSV file with information from fasta files
 qc_csv = pd.read_csv(CSV_FILE, sep=",", index_col=0, names=["#filtered"])
 # Assigned/unassigned from count sheet
-qc_csv = pd.concat([qc_csv, qc], axis=1).sort_index()
+qc_csv = pd.concat(
+    [qc_csv, qc], axis=1
+).sort_index()
 qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
 qc_csv.index = qc_csv.index.str.rsplit(".", n=1).str[0].str.strip()
 
 # SOFTWARE SHEET
 versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
 versions_csv.loc[-1] = ["report_date", pd.Timestamp.today()]  # add date as first row
-versions_csv.index = versions_csv.index + 1 
+versions_csv.index = versions_csv.index + 1
 versions_csv.sort_index(inplace=True)
 
 
-
 ##### WRITING TO EXCEL FILE #####
-def get_rows(df,content):
+def get_rows(df, content):
+    """Get list of rows indices in dataframe if row has content (for example rows from the same sample)"""
     rows = df[
         df.applymap(
-                    lambda x: True if isinstance(x, str) and content in x else False
-                ).any(axis=1)
-        ].index.tolist()
+            lambda x: True if isinstance(x, str) and content in x else False
+        ).any(axis=1)
+    ].index.tolist()
     return rows
 
+
 def format_rows(worksheet, row, report_format):
-    worksheet.set_row(  #row, height, cell_format, options
-        row + 1, None, report_format
-    )
+    """Format rows in excel file, arguments: row, height, cell_format, options"""
+    worksheet.set_row(row + 1, None, report_format)
+
 
 # From config
 report_params = dict(versions_csv.to_numpy())
-#print(report_params)
+# print(report_params)
 
-with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
+with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
 
     versions_csv.to_excel(writer, sheet_name="software", index=False, header=False)
     qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
     long_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
-    count_data.to_excel(writer, sheet_name="emu_counts", index=True, float_format="%.2f")
-    ra_data.to_excel(writer, sheet_name="emu_proportions", index=True, float_format="%.2f")
+    count_data.to_excel(
+        writer, sheet_name="emu_counts", index=True, float_format="%.2f"
+    )
+    ra_data.to_excel(
+        writer, sheet_name="emu_proportions", index=True, float_format="%.2f"
+    )
 
     workbook = writer.book
 
@@ -197,19 +206,26 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
     spike_format = workbook.add_format({"color": "orange"})
     pass_cutoff_format = workbook.add_format({"color": "blue"})
     fail_cutoff_format = workbook.add_format({"color": "red"})
-    fail_reads_format = workbook.add_format({"color": "red","bottom": 1})
+    fail_reads_format = workbook.add_format({"color": "red", "bottom": 1})
 
     for worksheet in workbook.worksheets():
         worksheet.set_column("A:A", 25, bold_format)  # width of cell
         worksheet.set_row(0, 15, bold_format)  # default row height
         worksheet.freeze_panes(1, 1)
 
-        for taxon in report_params['spike_taxa'].split(','):
-            worksheet.conditional_format(1, 1, len(long_df), len(count_data.columns), # (first_row, first_col, last_row, last_col)
-                {'type':     'text',
-                'criteria': 'containing',
-                'value':    taxon.strip().strip('"'),
-                'format':   spike_format})
+        for taxon in report_params["spike_taxa"].split(","):
+            worksheet.conditional_format(
+                1,
+                1,
+                len(long_df),
+                len(count_data.columns),  # (first_row, first_col, last_row, last_col)
+                {
+                    "type": "text",
+                    "criteria": "containing",
+                    "value": taxon.strip().strip('"'),
+                    "format": spike_format,
+                },
+            )
 
         if worksheet.get_name() == "software":
             worksheet.set_column("B:B", 30)
@@ -221,8 +237,8 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
             long_df.reset_index(inplace=True)
             for sample, path in sample_dict.items():
                 continue_sample = False
-                sample_rows = get_rows(long_df,sample)
-                #print(f"Processing sample: {sample} with {sample_rows} rows")
+                sample_rows = get_rows(long_df, sample)
+                # print(f"Processing sample: {sample} with {sample_rows} rows")
 
                 total_row = None
                 unassigned_row = None
@@ -230,33 +246,44 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine='xlsxwriter') as writer:
                 for row in sample_rows:
                     if long_df["species"][row] == "total":
                         total_row = row
-                        #print(f"Total row: {total_row}")
-                        if int(long_df["estimated counts"][total_row]) < int(report_params['min_reads']):
-                            #print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['min_reads']}")
+                        # print(f"Total row: {total_row}")
+                        if int(long_df["estimated counts"][total_row]) < int(
+                            report_params["min_reads"]
+                        ):
+                            # print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['min_reads']}")
                             format_rows(worksheet, total_row, fail_reads_format)
-                            continue_sample = True
+                        #    continue_sample = True
                         else:
-                            format_rows(worksheet, total_row, border_format) # mark last row
+                            format_rows(
+                                worksheet, total_row, border_format
+                            )  # mark last row
                     elif long_df["species"][row] == "unassigned":
                         unassigned_row = row
-                        #print(f"Unassigned row: {unassigned_row}")
-                    
+                        # print(f"Unassigned row: {unassigned_row}")
+
                 for row in sample_rows:
                     if not continue_sample and row == unassigned_row:
 
-                        if float(long_df["abundance total"][unassigned_row]) >= float(report_params['max_unassigned_prop']):
-                            #print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['max_unassigned_prop']}")
+                        if float(long_df["abundance total"][unassigned_row]) >= float(
+                            report_params["max_unassigned_prop"]
+                        ):
+                            # print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['max_unassigned_prop']}")
                             format_rows(worksheet, unassigned_row, fail_cutoff_format)
                             continue_sample = True
 
                 for row in sample_rows:
-                    if not continue_sample and (row != unassigned_row and row != total_row): 
-                        if (float(long_df["abundance total"][row]) >= float(report_params['min_abund_tot'])) and (float(long_df["estimated counts"][row])) >= int(report_params['min_counts_taxa']):
-                            #print(f"Abundance total {long_df['abundance total'][row]} is greater than {report_params['min_abund_tot']}")
+                    if not continue_sample and (
+                        row != unassigned_row and row != total_row
+                    ):
+                        if (
+                            float(long_df["abundance total"][row])
+                            >= float(report_params["min_abund_tot"])
+                        ) and (float(long_df["estimated counts"][row])) >= int(
+                            report_params["min_counts_taxa"]
+                        ):
+                            # print(f"Abundance total {long_df['abundance total'][row]} is greater than {report_params['min_abund_tot']}")
                             format_rows(worksheet, row, pass_cutoff_format)
-                
+
                 if continue_sample:
-                    #print(f"Continuing to next sample due to conditions met in sample: {sample}")
+                    # print(f"Continuing to next sample due to conditions met in sample: {sample}")
                     continue
-
-

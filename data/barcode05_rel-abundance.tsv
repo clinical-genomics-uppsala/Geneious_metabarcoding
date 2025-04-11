@@ -1,5 +1,5 @@
 tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
-1404	0.24741684321579382	Bacillus megaterium	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2.2267515889421445
-1827146	0.3081387123397617	Bacillus sp. IHB B 7164	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2.7732484110578555
-283878	0.4444444444444444	Leucobacter aridicollis	Leucobacter	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				4.0
-unassigned	0.95												100.0
+1404	0.0404863925262207	Bacillus megaterium	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2.22675158894214
+1827146	0.05042269838287	Bacillus sp. IHB B 7164	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2.77324841105785
+283878	0.909090909090909	Leucobacter aridicollis	Leucobacter	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				50
+unassigned	0												50
