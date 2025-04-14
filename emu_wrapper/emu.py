@@ -108,28 +108,6 @@ with open(os.path.join(path_to_data, "fasta.csv"), "a", newline="") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(row_to_write)
 
-# Get software versions
-emu_version = get_version(path_to_docker, emu_image, "emu", "emu_version")
-if emu_version[1] != 0:
-    error_counter += 1
-
-krona_version = get_version(path_to_docker, krona_image, "krona", "krona_version")
-if krona_version[1] != 0:
-    error_counter += 1
-
-# Write versions.csv
-with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfile:
-    writer = csv.writer(csvfile)
-
-    # Add config params
-    for section, params in config_dict.items():
-        for param, value in params.items():
-            writer.writerow([param, value])
-
-    # Add data from containers
-    writer.writerow(emu_version[0])
-    writer.writerow(krona_version[0])
-
 
 # Run emu abundance for each sample
 if len(infiles) > 0:
@@ -201,6 +179,30 @@ combine_outputs_subprocess = [
 ]
 if run_subprocess(combine_outputs_subprocess, "combine_outputs")[1] != 0:
     error_counter += 1
+
+
+# Get software versions
+emu_version = get_version(path_to_docker, emu_image, "emu", "emu_version")
+if emu_version[1] != 0:
+    error_counter += 1
+
+krona_version = get_version(path_to_docker, krona_image, "krona", "krona_version")
+if krona_version[1] != 0:
+    error_counter += 1
+
+# Write versions.csv
+with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+
+    # Add config params
+    for section, params in config_dict.items():
+        for param, value in params.items():
+            writer.writerow([param, value])
+
+    # Add data from containers
+    writer.writerow(emu_version[0])
+    writer.writerow(krona_version[0])
+
 
 # Excel report
 make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
