@@ -63,12 +63,16 @@ def run_subprocess(command, name):
     return output, p_status
 
 
-def get_version(image, software_version_cmd, name):
-    """Get version from software in docker container, print stderr, process name and exit status"""
-    command = f"{path_to_docker} run --rm {image} " + " ".join(software_version_cmd)
-    p = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
-    )
+def get_version(dockerpath, image, label, name):
+    """Get version from label in docker container, print stderr, process name and exit status"""
+    command = [
+        dockerpath,
+        "inspect",
+        "--format",
+        f"'{{{{ index .Config.Labels \"{label}\"}}}}'",
+        image,
+    ]
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, error) = p.communicate()
     p_status = p.wait()
     print(error.decode())
@@ -105,28 +109,13 @@ with open(os.path.join(path_to_data, "fasta.csv"), "a", newline="") as csvfile:
             writer.writerow(row_to_write)
 
 # Get software versions
-emu_version = get_version(emu_image, ["emu", "--version"], "emu_version")
-krona_version = get_version(
-    krona_image,
-    [
-        "ktImportTaxonomy",
-        "|",
-        "grep",
-        "'KronaTools'",
-        "|",
-        "sed",
-        "'s/^.*KronaTools",
-        "//g;",
-        "s/",
-        "-",
-        "ktImportTaxonomy.*//g'",
-    ],
-    "krona_version",
-)
+emu_version = get_version(path_to_docker, emu_image, "emu", "emu_version")
 if emu_version[1] != 0:
-            error_counter += 1
+    error_counter += 1
+
+krona_version = get_version(path_to_docker, krona_image, "krona", "krona_version")
 if krona_version[1] != 0:
-            error_counter += 1
+    error_counter += 1
 
 # Write versions.csv
 with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfile:
