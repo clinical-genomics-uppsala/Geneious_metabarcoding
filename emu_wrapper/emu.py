@@ -77,7 +77,7 @@ def get_version(dockerpath, image, label, name):
     p_status = p.wait()
     print(error.decode())
     print(f"{name} exit status: {p_status} \n")
-    version = [name, output.decode().strip()]
+    version = [name, output.decode().strip().replace('\'','')]
     return version, p_status
 
 
