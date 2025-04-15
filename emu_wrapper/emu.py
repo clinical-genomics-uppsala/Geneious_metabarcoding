@@ -14,24 +14,24 @@ start_time = datetime.datetime.now()
 error_counter = 0
 
 # Path to access bundled files in Geneious
-plugin_path = sys.argv[2]
+plugin_path = os.path.dirname(__file__)
 
 # Outfile to be imported to Geneious
-outfile = sys.argv[4]
+outfile = sys.argv[2]
 
 # Temporary Geneious folder. Example linux: /Users/user/Geneious 2022.1 Data/transient/1660719270002/x/8/
 # Example windows: D:\Geneious 2021.1 Data\transient\1677846391422\x\120
-path_to_geneious_data = sys.argv[6]
+path_to_geneious_data = sys.argv[4]
 
 # Config
 config = configparser.ConfigParser()
-config.read(sys.argv[8])
+config.read(sys.argv[6])
 config_dict = {s: dict(config.items(s)) for s in config.sections()}
 
 path_to_docker = config["SOFTWARE"]["path_to_docker"]
 
 # In/out data folder selected by user
-path_to_data = sys.argv[10]
+path_to_data = sys.argv[8]
 mount_path = os.path.join(path_to_data, ":/geneious")
 
 # Docker images

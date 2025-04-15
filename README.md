@@ -58,7 +58,8 @@ Transfer docker image to another computer
 	- 'Bundled Program Files (optional)' add:  
 		`emu.py` under 'Linux' and 'Mac OSX'  
 		`emu.bat` under 'Windows'  
-	- 'Additional Bundled Files (optional)' add: `emu.py`
+	- 'Additional Bundled Files (optional)' add:
+	 `emu.py` and `emu_report.py`
 - Step 2: 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
