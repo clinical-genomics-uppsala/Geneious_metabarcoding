@@ -13,22 +13,25 @@ import posixpath
 start_time = datetime.datetime.now()
 error_counter = 0
 
+# Path to access bundled files in Geneious
+plugin_path = sys.argv[2]
+
 # Outfile to be imported to Geneious
-outfile = sys.argv[2]
+outfile = sys.argv[4]
 
 # Temporary Geneious folder. Example linux: /Users/user/Geneious 2022.1 Data/transient/1660719270002/x/8/
 # Example windows: D:\Geneious 2021.1 Data\transient\1677846391422\x\120
-path_to_geneious_data = sys.argv[4]
+path_to_geneious_data = sys.argv[6]
 
 # Config
 config = configparser.ConfigParser()
-config.read(sys.argv[6])
+config.read(sys.argv[8])
 config_dict = {s: dict(config.items(s)) for s in config.sections()}
 
 path_to_docker = config["SOFTWARE"]["path_to_docker"]
 
 # In/out data folder selected by user
-path_to_data = sys.argv[8]
+path_to_data = sys.argv[10]
 mount_path = os.path.join(path_to_data, ":/geneious")
 
 # Docker images
@@ -205,13 +208,15 @@ with open(os.path.join(path_to_data, "versions.csv"), "a", newline="") as csvfil
 
 
 # Excel report
-make_report = "cd geneious; python ../emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
+make_report = "cd geneious; python ../scripts/emu_report.py emu-combined-species-counts.tsv emu-combined-species.tsv emu.xlsx fasta.csv versions.csv"
 report_subprocess = [
     path_to_docker,
     "run",
     "--rm",
     "-v",
     mount_path,
+    "-v",
+    os.path.join(plugin_path, ":/scripts"),
     emu_image,
     "/bin/bash",
     "-c",
