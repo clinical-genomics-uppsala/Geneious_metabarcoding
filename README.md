@@ -18,19 +18,10 @@ The workflow is tested on Windows and Mac, but may work on Linux.
 
 # Installation
 
-## Build docker images for emu and Krona  
-`cd emu_wrapper`  
-`docker build -f emu.Dockerfile -t emu:2024-05-13 .`  
-`docker build -f krona.Dockerfile -t krona:2024-05-13 .`
-
-Transfer docker image to another computer  
-`docker save -o path/to/emu2024-05-13.tar emu:2024-05-13`  
-`docker load -i path/to/emu2024-05-13.tar`  
-
-
 ## Setup Geneious wrapper plugins
 
-1. Create BBDuk_match_primers wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
+### 1. Create BBDuk_match_primers wrapper plugin 
+Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
 	- 'Plugin Type:' select 'General Operation'.
@@ -49,9 +40,8 @@ Transfer docker image to another computer
 - Step 3:
 	Press 'OK'
 
-&nbsp;
-
-2. Create Emu wrapper plugin: Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
+### 2. Create Emu wrapper plugin
+Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 - Step 1: 
 	- Fill in 'Plugin Name:' and 'Menu/Button Text:' of your choice. 
 	- 'Plugin Type:' select 'General Operation'. 
@@ -97,10 +87,20 @@ Transfer docker image to another computer
 ```
 [SOFTWARE]
 path_to_docker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
-git_version = 0.3.0
-krona_image = krona:2024-05-13
-emu_image = emu:2025-03-24
+git_version = 1.0.0
+krona_image = hydragenetics/krona:2025-04-09
+emu_image = hydragenetics/emu:2025-04-15
 ```
+Docker images are downloaded automatically but can also be downloaded from:  
+`docker pull hydragenetics/emu:<tag>`  
+`docker pull hydragenetics/krona:<tag>`  
+
+| Geneious_metabarcoding | image |
+| -------- | ------- |
+| v1.0.0 | hydragenetics/emu:2025-04-15 |
+| v1.0.0 | hydragenetics/krona:2025-04-09 | 
+
+
 Parameters for emu, see the emu documentation for details.
 ```
 [EMU]
@@ -128,3 +128,18 @@ min_abund_tot = 0.01			# if the proportion of reads for a taxon is larger than t
 2. Import the FASTQ files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.  
 ![Options when starting the workflow](images/startWorkflow.png?raw=true)  
  'Export to Folder' and 'Data path' must point to the same folder which should not contain any FASTA files (.fa/.fa.gz/.fasta/.fasta.gz) already. In Geneious, the output will be a log file. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report. See example output from a [small toy dataset](https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding/tree/log_file/data/).
+
+ &nbsp;
+
+ # Other
+
+ ## Build docker images locally
+
+If needed, docker images can be built locally from the docker files in this repo:  
+`cd docker`  
+`docker build -f emu.Dockerfile -t emu:<tag>> .`  
+`docker build -f krona.Dockerfile -t krona:<tag>> .`
+
+Transfer docker image to another computer:  
+`docker save -o path/to/emu.tar emu:<tag>>`  
+`docker load -i path/to/emu.tar` 
