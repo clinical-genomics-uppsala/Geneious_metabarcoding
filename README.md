@@ -57,6 +57,7 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 		`-o emu_output.tsv -g [inputFolderName] [otherOptions] 2>&1 > log.txt`
 	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)'
 - Step 3:  
+
 	Press 'Add' to add two user options (in this order):
 	- 'Command Line Switch': config_file, 'Option Label': Path to config file 
 	- 'Command Line Switch': path_to_data, 'Option Label': Data path  
