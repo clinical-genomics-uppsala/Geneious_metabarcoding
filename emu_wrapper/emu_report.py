@@ -21,12 +21,12 @@ if len(sys.argv) >= 5:
 
 # Test data - execute report script in Geneious_metabarcoding folder: python emu_wrapper/emu_report.py
 else:
-    COUNT_FILE = "data/emu-combined-species-counts.tsv"
-    RA_FILE = "data/emu-combined-species.tsv"
-    OUTPUT_EXCEL = "data/emu.xlsx"
-    CSV_FILE = "data/fasta.csv"
-    VERSION_FILE = "data/versions.csv"
-    EMUFOLDER = "data"
+    COUNT_FILE = "data/test_report/emu-combined-species-counts.tsv"
+    RA_FILE = "data/test_report/emu-combined-species.tsv"
+    OUTPUT_EXCEL = "data/test_report/emu.xlsx"
+    CSV_FILE = "data/test_report/fasta.csv"
+    VERSION_FILE = "data/test_report/versions.csv"
+    EMUFOLDER = "data/test_report/"
 
 
 ##### READING EMU OUTPUT FILES #####
