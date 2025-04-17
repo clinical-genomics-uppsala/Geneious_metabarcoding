@@ -73,9 +73,6 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
 	- Add the `16S_nanopore_pre-processing.geneiousWorkflow` workflow to the corresponding step.
 	- Add the Emu wrapper plugin to the corresponding step.
-	- Edit the options for the Emu wrapper plugin. Add the path to the config file to be used and the folder where the output should be stored.  
-	
-	![Options for the Emu plugin](images/workflowOptions.png?raw=true)  
 
 &nbsp;
 &nbsp;
@@ -105,7 +102,7 @@ Parameters for emu, see the emu documentation for details.
 ```
 [EMU]
 seq_type = map-ont				# --type
-database = 16S					# --db
+database = 16S/emu-prebuilt		# --db
 min_abund = 0.0001				# --min-abundance
 align_n = 50					# --N
 batch_k = 500000000				# --K
@@ -125,9 +122,12 @@ min_counts_taxa = 50			# if the number of reads is larger than this value for a 
 min_abund_tot = 0.01			# if the proportion of reads for a taxon is larger than this value for a taxon in a sample, the row => blue
 ```
 
-2. Import the FASTQ files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.  
-![Options when starting the workflow](images/startWorkflow.png?raw=true)  
- 'Export to Folder' and 'Data path' must point to the same folder which should not contain any FASTA files (.fa/.fa.gz/.fasta/.fasta.gz) already. In Geneious, the output will be a log file. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report. See example output from a [small toy dataset](data/test_report).
+2. Import the FASTQ files to Geneious. Select the files and go to 'Workflows' --> 'Run Workflow' and select '16S nanopore: pre-processing + emu'.
+Fill in the paths to the output folder and the config file. The two 'Export to Folder' options and the 'Data path' option must point to the same folder. This folder should not contain any FASTA files (.fa/.fa.gz/.fasta/.fasta.gz) already.   
+![Options when starting the workflow](images/start_workflow.png?raw=true)  
+Alternatively, these paths could be set in the workflow and not exposed to the user.
+
+In Geneious, the output will be a log file. Full output will be saved to disk including all emu output files, a html file with krona plots and an excel report. See example output from a [small toy dataset](data/test_report).
 
  &nbsp;
 
