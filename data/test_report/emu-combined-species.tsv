@@ -1,0 +1,9 @@
+species	genus	family	order	class	phylum	superkingdom	barcode05	barcode02	barcode03	barcode01	barcode04
+Bacillus megaterium	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Bacteria	0.0404863925262207				
+Bacillus sp. IHB B 7164	Bacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Bacteria	0.05042269838287				
+Escherichia coli	Escherichia	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria	Bacteria			0.05		0.740740740740741
+Imtechella halotolerans	Imtechella 	Flavobacteriaceae	Flavobacteriales	Flavobacteriia	Bacteroidota	Bacteria		1.0			
+Leucobacter aridicollis	Leucobacter	Microbacteriaceae	Micrococcales	Actinobacteria	Actinobacteria	Bacteria	0.909090909090909				
+Staphylococcus aureus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Bacteria			0.95		0.0740740740740741
+Staphylococcus epidermidis	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Bacteria				1.0	0.185185185185185
+unassigned							0.0	0.0	0.0	0.0	0.0

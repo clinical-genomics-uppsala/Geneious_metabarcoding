@@ -1,0 +1,18 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+208224	0.01974276980945454	Enterobacter kobei	Enterobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Enterobacter cloacae complex	191.58383823094684
+550	0.0019164223563154408	Enterobacter cloacae	Enterobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Enterobacter cloacae complex	18.596962545685038
+1282	0.35908328587849175	Staphylococcus epidermidis	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				3484.544206164884
+1280	0.06690949390490104	Staphylococcus aureus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				649.2897288531598
+28151	0.045176408883169476	Serratia proteamaculans	Serratia	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				438.3918718022766
+614	0.0038195248202177964	Serratia liquefaciens	Serratia	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				37.0646688553935
+1351	0.12284682826199071	Enterococcus faecalis	Enterococcus	Enterococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				1192.1056214543578
+28037	0.13017019082001097	Streptococcus mitis	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				1263.1715317173864
+562	0.1487379197447883	Escherichia coli	Escherichia	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				1443.3527732034258
+41202	0.06786842937316123	Ewingella americana	Ewingella	Yersiniaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				658.5952386371566
+1747	0.01227436823104693	Cutibacterium acnes	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				119.11046931407941
+2066049	0.013149116205634286	Citrobacter freundii complex sp. CFNIH2	Citrobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria			Citrobacter freundii complex	127.59902365947511
+35703	0.001910192716490524	Citrobacter amalonaticus	Citrobacter	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				18.536510120824044
+529	0.002888086642599278	Ochrobactrum anthropi	Ochrobactrum	Brucellaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				28.02599277978339
+61646	0.0015471892728210418	Lelliottia amnigena	Lelliottia	Enterobacteriaceae	Enterobacterales	Gammaproteobacteria	Proteobacteria		Bacteria				15.01392470345539
+323284	0.001959773078906653	Alcaligenes aquatilis	Alcaligenes	Alcaligenaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				19.01763795771016
+unassigned	0.0												0.0

@@ -1,0 +1,21 @@
+path_to_docker,/usr/local/bin/docker
+git_version,dev
+krona_image,krona:2024-05-13
+emu_image,emu:2025-03-24
+seq_type,map-ont
+database,16S
+min_abund,0.0001
+align_n,50
+batch_k,500000000
+no_threads,8
+keep_counts,True
+keep_files,True
+keep_read_assignments,True
+output_unclassified,True
+spike_taxa,"""Imtechella halotolerans"", ""Allobacillus halotolerans"", ""Truepera radiovictrix"""
+min_reads,1000
+max_unassigned_prop,0.9
+min_counts_taxa,50
+min_abund_tot,0.01
+emu_version,3.4.5
+krona_version,2.8.1
