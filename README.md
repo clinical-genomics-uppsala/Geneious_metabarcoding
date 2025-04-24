@@ -1,5 +1,7 @@
 # Geneious workflow for classification of nanopore metabarcoding data
 
+![Workflow overview](images/Geneious_metabarcoding.png?raw=true)  
+
 [Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences using the emu standard database. The emu database is "a combination of rrnDB v5.6 and NCBI 16S RefSeq from 17 September, 2020. Taxonomy is also from NCBI on the same date. The resulting database contains 49,301 sequences from 17,555 unique bacterial and archaeal species". Post-processing includes Krona plots and a report in excel format.
 
 Input: FASTQ files. Sample file names should preferably start with barcode no: 01, 02.. or with barcode49, barcode27. Sample names should not contain any spaces, dots or special characters (å/ä/ö etc).  
@@ -36,7 +38,7 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
 	- 'Command Line' (example for Windows):  
 	`C:\Program`` Files\Geneious`` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program`` Files\Geneious`` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t`
-	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' 
+	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' and 'Name in Geneious:' `[inputNames]`
 - Step 3:
 	Press 'OK'
 
@@ -55,9 +57,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
 	- 'Command Line':
 		`-o emu_output.tsv -g [inputFolderName] [otherOptions] 2>&1 > log.txt`
-	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)'
+	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)' and 'Name in Geneious:' `log` (for example)
 - Step 3:  
-
 	Press 'Add' to add two user options (in this order):
 	- 'Command Line Switch': config_file, 'Option Label': Path to config file 
 	- 'Command Line Switch': path_to_data, 'Option Label': Data path  
@@ -73,7 +74,7 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- Edit the two BBDuk steps. One step to trim primers from left end (27F and 1492R) and one for right end (27F_rev and 1492R_rev).
 3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
 	- Add the `16S_nanopore_pre-processing.geneiousWorkflow` workflow to the corresponding step.
-	- Add the Emu wrapper plugin to the corresponding step.
+	- Add the Emu wrapper plugin to the corresponding step. 'Expose all options' must be selected for the options to be visible when starting the workflow.
 
 &nbsp;
 &nbsp;
