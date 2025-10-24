@@ -51,22 +51,20 @@ LONG_DF_HEADER = ["species", "tax_id", "abundance", "estimated counts", "abundan
 def sort_samples(df, sortabund):
     """Sort data frame columns by sample names and most abundant taxa.
     Sample names should start with barcode no: 01, 02, 03; or with barcode49, barcode27 etc.
-    If count table is input df set sortabund=True and df is used to generate data to qc sheet.
+    If count table is input df set sortabund=True and df is used to sort taxa by abundance.
     """
     header = df.columns.values.tolist()
     taxonomy = [
         name for name in header if not name[0].isdigit() if "barcode" not in name
     ]
-
     # sort sample columns by name, not taxonomy
     samples = np.sort(df.columns.difference(taxonomy)).tolist()
     # remove columns with threshold - duplicates
     samples = [sample for sample in samples if "threshold" not in sample]
-
     df = df.loc[:, taxonomy + samples].set_index(taxonomy)  # taxonomy as index columns
 
     if sortabund == "yes":
-        # Remove and save unassigned row
+        # Remove and save unmapped/unclassified/unassigned row
         unassigned = df.iloc[-1, :]
         df = df.iloc[:-1, :]
         # Add temporary row sum column for sorting
@@ -75,16 +73,8 @@ def sort_samples(df, sortabund):
             .sort_values(by="sum", ascending=False)
             .drop(["sum"], axis=1)
         )
-
-        # For qc sheet - number of assigned/unassigned reads per samples
-        qc = df.sum(axis=0, numeric_only=True)
-        qc = pd.DataFrame(qc, columns=["#assigned"])
-        qc["#unassigned"] = unassigned
-
         df = pd.concat([df, unassigned.to_frame().T])
-
-        return (df, qc)
-
+        return df
     else:
         return df
 
@@ -131,10 +121,28 @@ def create_long_df(long_list, df_drop, df_header):
     long_df = long_df.set_index("Sample")
     long_df = long_df.drop(df_drop, axis=1,)
     long_df = long_df[df_header]
-    matches = long_df["tax_id"] == "unassigned"
-    long_df.loc[matches, "species"] = long_df.loc[matches, "tax_id"]
+    unmapped = long_df["tax_id"] == "unmapped"
+    unclassified = long_df["tax_id"] == "mapped_unclassified"
+    long_df.loc[unmapped, "species"] = long_df.loc[unmapped, "tax_id"]
+    long_df.loc[unclassified, "species"] = long_df.loc[unclassified, "tax_id"]
     long_df = long_df.drop(["tax_id"], axis=1)
     return long_df
+
+
+def create_qc_df(fasta_csv, long_df):
+    """Create qc data frame including no of reads in fasta files and unmapped/unclassified from long dataframe"""
+    qc_csv = pd.read_csv(fasta_csv, sep=",", index_col=0, names=["#filtered"])
+
+    long_df = long_df.drop(["abundance","abundance total", "% total"], axis=1)
+    unmapped_df = long_df.loc[long_df["species"] == "unmapped"].rename(columns={"estimated counts": "#unmapped"})
+    unclassified_df = long_df.loc[long_df["species"] == "mapped_unclassified"].rename(columns={"estimated counts": "#mapped_unclassified"})
+
+    qc_csv = pd.concat([qc_csv, unmapped_df, unclassified_df], axis=1).sort_index()
+    qc_csv = qc_csv.drop(["species"], axis=1)
+    qc_csv["%assigned"] = 100 - ((qc_csv["#unmapped"] + qc_csv["#mapped_unclassified"]) / qc_csv["#filtered"]*100)
+    qc_csv.index = qc_csv.index.str.rsplit(".", n=1).str[0].str.strip()
+
+    return qc_csv
 
 
 # LONG FORMAT - rel-abundance.tsv
@@ -144,10 +152,8 @@ long_format_df = create_long_df(all_samples_list, LONG_DF_DROP, LONG_DF_HEADER)
 
 # COUNTS EMU - tsv
 count_data = pd.read_csv(COUNT_FILE, sep="\t", header=0)
-count_data, qc = sort_samples(count_data, "yes")
-count_data.columns = (
-    count_data.columns.str.rsplit(".", n=1).str[0].str.strip()
-)  # remove .fasta/.fastq
+count_data = sort_samples(count_data, "yes")
+count_data.columns = count_data.columns.str.rsplit(".", n=1).str[0].str.strip() # remove .fasta/.fastq
 
 # RELATIVE ABUNDANCE EMU - tsv
 ra_data = pd.read_csv(RA_FILE, sep="\t", header=0)
@@ -156,14 +162,7 @@ ra_data.columns = ra_data.columns.str.rsplit(".", n=1).str[0].str.strip()
 ra_data = ra_data.reindex(count_data.index)  # same sorting as count sheet (abundance)
 
 # QC SHEET
-# CSV file with information from fasta files
-qc_csv = pd.read_csv(CSV_FILE, sep=",", index_col=0, names=["#filtered"])
-# Assigned/unassigned from count sheet
-qc_csv = pd.concat(
-    [qc_csv, qc], axis=1
-).sort_index()
-qc_csv["prop_assigned"] = qc_csv["#assigned"] / qc_csv["#filtered"]
-qc_csv.index = qc_csv.index.str.rsplit(".", n=1).str[0].str.strip()
+qc_df = create_qc_df(CSV_FILE, long_format_df)
 
 # SOFTWARE SHEET
 versions_csv = pd.read_csv(VERSION_FILE, sep=",", header=None)
@@ -195,7 +194,7 @@ report_params = dict(versions_csv.to_numpy())
 with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
 
     versions_csv.to_excel(writer, sheet_name="software", index=False, header=False)
-    qc_csv.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
+    qc_df.to_excel(writer, sheet_name="qc", index=True, float_format="%.2f")
     long_format_df.to_excel(writer, sheet_name="emu_long", index=True, float_format="%.2f")
     count_data.to_excel(
         writer, sheet_name="emu_counts", index=True, float_format="%.2f"
@@ -268,7 +267,7 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
                             format_rows(
                                 worksheet, total_row, border_format
                             )  # mark last row
-                    elif long_format_df["species"][row] == "unassigned":
+                    elif long_format_df["species"][row] == "unmapped":
                         unassigned_row = row
                         # print(f"Unassigned row: {unassigned_row}")
 
