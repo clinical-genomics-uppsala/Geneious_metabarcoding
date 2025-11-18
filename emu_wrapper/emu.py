@@ -8,7 +8,6 @@ import csv
 import gzip
 import configparser
 import datetime
-import posixpath
 
 start_time = datetime.datetime.now()
 error_counter = 0
@@ -36,11 +35,11 @@ mount_path = os.path.join(path_to_data, ":/geneious")
 
 # Docker images
 krona_image = config["SOFTWARE"]["krona_image"]
-emu_image = config["SOFTWARE"]["emu_image"]  # database included in image
+emu_image = config["SOFTWARE"]["emu_image"]
 
 # Build Emu command
 seq_type = config["EMU"]["seq_type"]
-database = posixpath.join("/emu_database", config["EMU"]["database"])
+database = config["EMU"]["database"]
 min_abund = config["EMU"]["min_abund"]
 align_n = config["EMU"]["align_n"]
 batch_k = config["EMU"]["batch_k"]
@@ -121,6 +120,8 @@ if len(infiles) > 0:
             "--rm",
             "-v",
             mount_path,
+            "-v",
+            os.path.join(plugin_path, ":/db"),
             emu_image,
             "emu",
             "abundance",
@@ -128,7 +129,7 @@ if len(infiles) > 0:
             "--type",
             seq_type,
             "--db",
-            database,
+            os.path.join("/db", database),
             "--min-abundance",
             min_abund,
             "--N",
