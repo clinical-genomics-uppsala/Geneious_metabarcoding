@@ -175,7 +175,7 @@ versions_csv.sort_index(inplace=True)
 def get_rows(df, content):
     """Get list of rows indices in dataframe if row has content (for example rows from the same sample)"""
     rows = df[
-        df.applymap(
+        df.map(
             lambda x: True if isinstance(x, str) and content in x else False
         ).any(axis=1)
     ].index.tolist()
@@ -189,7 +189,6 @@ def format_rows(worksheet, row, report_format):
 
 # From config
 report_params = dict(versions_csv.to_numpy())
-# print(report_params)
 
 with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
 
@@ -248,19 +247,21 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
             for sample, path in all_samples.items():
                 continue_sample = False
                 sample_rows = get_rows(long_format_df, sample)
-                # print(f"Processing sample: {sample} with {sample_rows} rows")
+                #print(f"Processing sample: {sample} with rows {sample_rows}")
 
                 total_row = None
-                unassigned_row = None
+                unmapped_row = None
+                unclasssified_row = None
 
+                # Get "non-species" rows for the sample, handle total row
                 for row in sample_rows:
                     if long_format_df["species"][row] == "total":
                         total_row = row
-                        # print(f"Total row: {total_row}")
+                        #print(f"Total row: {total_row}")
                         if int(long_format_df["estimated counts"][total_row]) < int(
                             report_params["min_reads"]
                         ):
-                            # print(f"Estimated counts {long_df['estimated counts'][total_row]} is less than {report_params['min_reads']}")
+                            #print(f"Estimated counts {long_format_df['estimated counts'][total_row]} is less than {report_params['min_reads']}")
                             format_rows(worksheet, total_row, fail_reads_format)
                         #    continue_sample = True
                         else:
@@ -268,22 +269,27 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
                                 worksheet, total_row, border_format
                             )  # mark last row
                     elif long_format_df["species"][row] == "unmapped":
-                        unassigned_row = row
-                        # print(f"Unassigned row: {unassigned_row}")
+                        unmapped_row = row
+                        #print(f"Unmapped row: {unmapped_row}")
+                    elif long_format_df["species"][row] == "mapped_unclassified":
+                        unclassified_row = row
+                        #print(f"Mapped unclassified row: {unclassified_row}")
 
-                for row in sample_rows:
-                    if not continue_sample and row == unassigned_row:
+                # Check max_unassigned criteria
+                unassigned_prop = float(long_format_df["abundance total"][unmapped_row]) + float(long_format_df["abundance total"][unclassified_row])
+                if float(unassigned_prop) >= float(report_params["max_unassigned_prop"]):
+                    #print(f"Abundance total {long_format_df['abundance total'][unmapped_row]} and {long_format_df['abundance total'][unclassified_row]} is greater than {report_params['max_unassigned_prop']}")
+                    for row in sample_rows:
+                        if not continue_sample and row == unmapped_row:
+                                format_rows(worksheet, unmapped_row, fail_cutoff_format)
+                        elif not continue_sample and row == unclassified_row:
+                                format_rows(worksheet, unclassified_row, fail_cutoff_format)
+                                continue_sample = True
 
-                        if float(long_format_df["abundance total"][unassigned_row]) >= float(
-                            report_params["max_unassigned_prop"]
-                        ):
-                            # print(f"Abundance total {long_df['abundance total'][unassigned_row]} is greater than {report_params['max_unassigned_prop']}")
-                            format_rows(worksheet, unassigned_row, fail_cutoff_format)
-                            continue_sample = True
-
+                # Highlight taxa passing cutoff
                 for row in sample_rows:
                     if not continue_sample and (
-                        row != unassigned_row and row != total_row
+                        row != unmapped_row and row != unclassified_row and row != total_row
                     ):
                         if (
                             float(long_format_df["abundance total"][row])
@@ -291,9 +297,9 @@ with pd.ExcelWriter(OUTPUT_EXCEL, engine="xlsxwriter") as writer:
                         ) and (float(long_format_df["estimated counts"][row])) >= int(
                             report_params["min_counts_taxa"]
                         ):
-                            # print(f"Abundance total {long_df['abundance total'][row]} is greater than {report_params['min_abund_tot']}")
+                            #print(f"Abundance total {long_format_df['abundance total'][row]} for {long_format_df['species'][row]} is greater than {report_params['min_abund_tot']}")
                             format_rows(worksheet, row, pass_cutoff_format)
 
                 if continue_sample:
-                    # print(f"Continuing to next sample due to conditions met in sample: {sample}")
+                    #print(f"Continuing to next sample due to conditions met in sample: {sample}")
                     continue
