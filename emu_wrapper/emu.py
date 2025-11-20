@@ -8,6 +8,7 @@ import csv
 import gzip
 import configparser
 import datetime
+import posixpath
 
 start_time = datetime.datetime.now()
 error_counter = 0
@@ -129,7 +130,7 @@ if len(infiles) > 0:
             "--type",
             seq_type,
             "--db",
-            os.path.join("/db", database),
+            posixpath.join("/db", database),
             "--min-abundance",
             min_abund,
             "--N",
