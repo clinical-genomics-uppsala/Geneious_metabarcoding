@@ -8,7 +8,7 @@ Important - samples should be named with dates to ensure the newest samples are 
 
 Docker images: 
 - Build the docker image for vegan, for example:
-`docker build -f vegan.Dockerfile -t vegan:<label>> .`  
+`docker build -f vegan.Dockerfile -t vegan:<label> .`  
 - The emu image for the Geneious metabarcoding workflow is also needed, currently `hydragenetics/emu:2025-04-15`.
 
 ## Usage
@@ -19,7 +19,7 @@ Docker images:
 github = Geneious_metabarcoding version
 pathToDocker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
 emuImage = hydragenetics/emu:2025-04-15
-veganImage = vegan:2024-12-12
+veganImage = vegan:<label>
 pathToData = X:\path\to\folder\with\emu\files
 ```  
-- Start the python script in the terminal or by double-clicking on it (Windows).
+- Start the `internal_control_log.py` script in the terminal or by double-clicking on it (Windows). The `config.ini` and `internal_control_log.Rmd` files must be located in the same folder as the python script.
