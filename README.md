@@ -1,6 +1,6 @@
 # Geneious workflow for classification of nanopore metabarcoding data
 
-[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers and randomly subsetting sequences for emu. The workflow is currently adapted to 16S sequences using the emu standard database. The emu database is "a combination of rrnDB v5.6 and NCBI 16S RefSeq from 17 September, 2020. Taxonomy is also from NCBI on the same date. The resulting database contains 49,301 sequences from 17,555 unique bacterial and archaeal species". Post-processing includes Krona plots and a report in excel format.
+[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers and randomly subsetting sequences for emu.
 
 Input: FASTQ files. Sample file names should preferably start with barcode no: 01, 02.. or with barcode49, barcode27. Sample names should not contain any spaces, dots or special characters (å/ä/ö etc).  
 Main outputs: [Krona plots](data/test_report/krona.html) and [Excel report](data/test_report/emu.xlsx) for each run.
@@ -55,6 +55,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 		`emu.bat` under 'Windows'  
 	- 'Additional Bundled Files (optional)' add:
 	 `emu.py` and `emu_report.py`
+	 `emu-prebuilt` database directory
+	 any other databases
 - Step 2: 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
@@ -90,9 +92,9 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 ```
 [SOFTWARE]
 path_to_docker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
-git_version = 1.0.0
+git_version = dev
 krona_image = hydragenetics/krona:2025-04-09
-emu_image = hydragenetics/emu:2025-04-15
+emu_image = hydragenetics/emu:3.5.4
 ```
 Docker images are downloaded automatically but can also be downloaded from:  
 `docker pull hydragenetics/emu:<tag>`  
@@ -100,15 +102,15 @@ Docker images are downloaded automatically but can also be downloaded from:
 
 | Geneious_metabarcoding | image |
 | -------- | ------- |
-| v1.0.0 | hydragenetics/emu:2025-04-15 |
-| v1.0.0 | hydragenetics/krona:2025-04-09 | 
+| dev | hydragenetics/emu:3.5.4 |
+| dev | hydragenetics/krona:2025-04-09 | 
 
 
 Parameters for emu, see the emu documentation for details.
 ```
 [EMU]
 seq_type = map-ont				# --type
-database = 16S/emu-prebuilt		# --db
+database = emu-prebuilt			# --db
 min_abund = 0.0001				# --min-abundance
 align_n = 50					# --N
 batch_k = 500000000				# --K
