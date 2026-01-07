@@ -1,19 +1,22 @@
-FROM --platform=linux/amd64 quay.io/biocontainers/emu:3.4.5--hdfd78af_0
+FROM continuumio/miniconda3:25.3.1-1 AS build
 
-LABEL description="Emu image with emu pre-built 16S database"
-LABEL emu=3.4.5
-LABEL version=2025-04-15
-LABEL maintainer="ida.karlsson@scilifelab.uu.se"
+RUN conda config --set channel_priority strict && \
+    conda install -c conda-forge conda-pack && \
+    conda create --name hydra -c conda-forge -c bioconda -c defaults \
+    emu=3.5.4 \
+    xlsxwriter==3.0.9
 
-# Set workdir
+
+FROM debian:buster-slim AS runtime
+
 WORKDIR /
 
-# Python packages (osfclient & excel report dependencies)
-RUN pip install --no-cache-dir osfclient==0.0.5 \
-                                pandas==1.5.3 \
-                                numpy==1.24.2 \
-                                xlsxwriter==3.0.9
+################## METADATA ######################
+LABEL description="Emu with excel report dependencies"
+LABEL maintainer="ida.karlsson@scilifelab.uu.se"
+LABEL version=3.5.4
+LABEL emu=3.5.4
+LABEL xlsxwriter=3.0.9
 
-# Get 16S database from emu developers
-RUN mkdir -p /emu_database/16S/emu-prebuilt && export EMU_DATABASE_16S=/emu_database/16S/emu-prebuilt && cd ${EMU_DATABASE_16S} \
-    && osf -p 56uf7 fetch osfstorage/emu-prebuilt/emu.tar && tar -xvf emu.tar
+COPY --from=build /opt/conda/envs/hydra/ /opt/conda/envs/hydra/
+ENV PATH=${PATH}:/opt/conda/envs/hydra/bin
