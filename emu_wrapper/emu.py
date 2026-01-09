@@ -229,23 +229,22 @@ if run_subprocess(report_subprocess, "report")[1] != 0:
 
 # Handle output files
 for file in os.listdir(path_to_data):
+    path_to_output_file = os.path.join(path_to_data, file)
+    
     # Compress intermediate files
     if file.endswith((".sam", ".fa", ".fasta")):
-        with open(os.path.join(path_to_data, file), "rb") as f_in:
-            with gzip.open(
-                str(os.path.join(path_to_data, file) + ".gz"), "wb"
-            ) as f_out:
+        size = os.stat(path_to_output_file).st_size
+        if size > 0:
+            with open(path_to_output_file, "rb") as f_in, gzip.open(str(path_to_output_file + ".gz"), "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
-                f_in.close()
-                f_out.close()
-                os.remove(os.path.join(path_to_data, file))
+            os.remove(path_to_output_file)
+        else:
+            os.remove(path_to_output_file) # remove empty files
 
     # Copy combined output file to Geneious tmp folder
     if file.endswith("emu-combined-species-counts.tsv"):
-        multi_sample_output = file
-
         shutil.copyfile(
-            os.path.join(path_to_data, multi_sample_output),
+            path_to_output_file,
             os.path.join(path_to_geneious_data, outfile),
         )
 
