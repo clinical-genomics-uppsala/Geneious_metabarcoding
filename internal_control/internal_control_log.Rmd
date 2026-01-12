@@ -7,11 +7,12 @@ output:
         fig_width: 10
         fig_height: 6
 params:
-    #emu: "data/emu-combined-species-counts.tsv" # For testing locally
     emu: '' # For docker
+    #emu: "data/emu-combined-species-counts.tsv" # For testing locally
     github: ''
     MOCK_SPP: !r c('Staphylococcus saprophyticus', 'Cutibacterium avidum', 'Streptococcus equi', 'Imtechella halotolerans', 'Allobacillus halotolerans', 'Truepera radiovictrix')
     STDEV_NO: 20
+    MAX_LABELS: 10
     MAX_SAMPLES: 35
 ---
 
@@ -34,6 +35,7 @@ environment(ordiellipse_custom_scale) = asNamespace('vegan')
 
 ```{r data, echo=FALSE}
 STDEV_NO = params$STDEV_NO
+MAX_LABELS = params$MAX_LABELS
 MAX_SAMPLES = params$MAX_SAMPLES
 MOCK_SPP = params$MOCK_SPP
 
@@ -50,6 +52,7 @@ count_table = count_table[, order(names(count_table))]
 factors = as.data.frame(names(count_table))
 row.names(factors) = factors$`names(count_table)`
 factors$`names(count_table)` = NULL
+factors$sample_no = as.character(1:nrow(factors))
 factors$no_reads = colSums(count_table)
 factors$no_taxa = specnumber(count_table, MARGIN=2)
 
@@ -57,6 +60,12 @@ factors$no_taxa = specnumber(count_table, MARGIN=2)
 if (length(row.names(factors)) >= STDEV_NO) {
   factors$sample = as.factor(c(rep("stdav", STDEV_NO),rep("test",(length(row.names(factors))-STDEV_NO))))
   test_samples = names(count_table) %in% row.names(factors)[factors$sample=="test"] # Get test samples
+  if (length(which(test_samples == TRUE)) > MAX_LABELS) {
+    test_subset = names(count_table) %in% row.names(factors)[c((nrow(factors)-MAX_LABELS+1):nrow(factors))]
+    use_subset = TRUE
+  } else {
+    use_subset = FALSE
+  }
 }
 
 # Calculate proportions from counts
@@ -80,45 +89,56 @@ samples.rda = rda(t(prop_table) ~ 1)
 coldict = c("stdav"="white","test"="red")
 
 if (length(row.names(factors)) >= STDEV_NO) {
-  # 2STDAV stdav + test
-  {plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
-    with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
-    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
-    with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
-    if (length(which(factors$sample == "test")) > 0 & length(which(factors$sample == "test")) < 3) { # FIXAT FEL HÄR!!!
-      with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
-    }
+  # 2STDEV stdev and test samples
+  plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
+  with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
+  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+  with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
+  if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
+    with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
   }
-  
-  # Test samples only with stdev from stdav
-  if (length(which(factors$sample == "test")) > 2) {
-  {ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
+    
+  # 3STDEV stdev and test samples
+  plot(samples.rda, display="sites", type="n", main="3 standardavvikelser")
+  with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
+  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+  with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
+  if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
+    with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
+  }
+
+  # 2 STDEV - only show test samples with stdev ellipses
+  if (length(which(test_samples) == TRUE) > 2) {
+    if (use_subset == TRUE) {
+      ordipointlabel(samples.rda, select=test_subset, display="sites", cex=0.75, pch=21, bg="red")
+    } else {
+      ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
+    }
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
-    title(main="2 standardavvikelser - bara test-prover")}
+    title(main=paste0("2 standardavvikelser - max de senaste ", MAX_LABELS, " test-proverna"))
   }
-  
-  # 3STDAV stdav + test
-  {plot(samples.rda, display="sites", type="n", main="3 standardavvikelser")
-    with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
-    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
-    with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
-    if (length(which(factors$sample == "test")) > 0 & length(which(factors$sample == "test")) < 3) { # FIXAT FEL HÄR!!!
-          with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
-        }
+
+  # 3STDEV - only show test samples with stdev ellipses
+    if (length(which(test_samples) == TRUE) > 2) {
+    if (use_subset == TRUE) {
+      ordipointlabel(samples.rda, select=test_subset, display="sites", cex=0.75, pch=21, bg="red")
+    } else {
+      ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     }
-  
-  # Test samples only with stdev from stdav
-  if (length(which(factors$sample == "test")) > 2) {
-  {ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
-    title(main="3 standardavvikelser - bara test-prover")}
+    title(main=paste0("3 standardavvikelser - max de senaste ", MAX_LABELS, " test-proverna"))
   }
 
 } else if (length(row.names(factors)) > 2) {
-  plot(samples.rda, display="sites", type="points", pch=21, main="PCA positiva kontroller - färre än 20 prover")
-  ordipointlabel(samples.rda, display="sites", cex=0.75, pch=21)
+    if (length(row.names(factors)) >= 8) {
+      plot(samples.rda, display="sites", type="points", pch=21, main=paste0("PCA positiva kontroller - färre än ", STDEV_NO, " prover"))
+      ordipointlabel(samples.rda, display="sites", cex=0.75, pch=21)
+    }
+    else {
+      plot(samples.rda, display="sites", type="text", main=paste0("PCA positiva kontroller - färre än ", STDEV_NO, " prover"))
+    }
 
 } else {
   cat("För få prover för PCA")
@@ -131,7 +151,7 @@ Max `r MAX_SAMPLES` av de senaste testproverna visas.
 
 ```{r mock species, echo=FALSE}
 mock_table = prop_table[row.names(prop_table) %in% MOCK_SPP,]
-mock_table = mock_table[MOCK_SPP,]
+mock_table = mock_table[MOCK_SPP,]*100 # transform to percent
 
 # Restrict no of samples shown in mock taxa plots to for example 35
 if (length(row.names(factors)) > (STDEV_NO + MAX_SAMPLES)) {
@@ -145,7 +165,7 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
     sd_samples = sd(mock_table[i,which(factors$sample == "stdav")])
     mean_samples = mean(mock_table[i,which(factors$sample == "stdav")])
     
-    plot(mock_table[i,], ylab=row.names(mock_table)[i], xlab="", xaxt="n", ylim=c(mean_samples-(3*sd_samples),mean_samples+(3*sd_samples)), pch=21, bg=c("white", "red")[factors$sample], cex=1.5, cex.lab=1.5)
+    plot(mock_table[i,], ylab=paste0("% ", row.names(mock_table)[i]), xlab="", xaxt="n", ylim=c(mean_samples-(3*sd_samples),mean_samples+(3*sd_samples)), pch=21, bg=c("white", "red")[factors$sample], cex=1.5, cex.lab=1.5)
     axis(1, labels=dimnames(mock_table)[[2]], at=1:ncol(mock_table), las=2, cex=1.5, cex.axis=1)
 
     abline(h=mean_samples+(3*sd_samples), lty=3)
@@ -159,14 +179,14 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
     legend('topright', legend=c("3 sd", "2 sd"), lty=c(3,2), cex=1.5)
     legend('bottomright', legend=levels(factors$sample), pch=21, pt.bg=c("white","red"), cex=1.5)
   }
-  # If <20 samples: plot without SD lines
+  # If not enough samples to calculate stdev: plot without SD lines
   else {
-    plot(mock_table[i,], ylab=row.names(mock_table)[i], xlab="", xaxt="n", pch=21, bg=c("white", "red")[factors$sample], cex=1.5, cex.lab=1.5)
+    plot(mock_table[i,], ylab=paste0("% ", row.names(mock_table)[i]), xlab="", xaxt="n", pch=21, bg=c("white"), cex=1.5, cex.lab=1.5)
     axis(1, labels=dimnames(mock_table)[[2]], at=1:ncol(mock_table), las=2, cex=1.5, cex.axis=1)
     
     plot.new()
     par(mar=c(1,1,1,1), oma=c(0, 0, 0, 0))
-    legend('bottomright', legend=levels(factors$sample), pch=21, pt.bg=c("white","red"), cex=1.5)
+    legend('bottomright', legend=c("stdav"), pch=21, pt.bg=c("white"), cex=1.5)
   }
 }
 ```
