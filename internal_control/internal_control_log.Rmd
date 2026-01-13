@@ -1,5 +1,5 @@
 ---
-title: "16S internkontroll logg"
+title: "16S internal control log"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
     html_document:
@@ -31,7 +31,7 @@ source("/usr/local/src/rscripts/ordiellipse_custom_scale.R") # For Docker
 environment(ordiellipse_custom_scale) = asNamespace('vegan')
 ```
 
-### Prover
+### Samples
 
 ```{r data, echo=FALSE}
 STDEV_NO = params$STDEV_NO
@@ -56,9 +56,9 @@ factors$sample_no = as.character(1:nrow(factors))
 factors$no_reads = colSums(count_table)
 factors$no_taxa = specnumber(count_table, MARGIN=2)
 
-# Add sample type when >20 samples
+# Add sample type when >n samples
 if (length(row.names(factors)) >= STDEV_NO) {
-  factors$sample = as.factor(c(rep("stdav", STDEV_NO),rep("test",(length(row.names(factors))-STDEV_NO))))
+  factors$sample = as.factor(c(rep("stdev", STDEV_NO),rep("test",(length(row.names(factors))-STDEV_NO))))
   test_samples = names(count_table) %in% row.names(factors)[factors$sample=="test"] # Get test samples
   if (length(which(test_samples == TRUE)) > MAX_LABELS) {
     test_subset = names(count_table) %in% row.names(factors)[c((nrow(factors)-MAX_LABELS+1):nrow(factors))]
@@ -73,9 +73,9 @@ prop_table = prop.table(as.matrix(count_table), 2)
 
 ```
 
-De första `r STDEV_NO` proverna används för att beräkna standardavvikelsen.\
-Antal prover: `r length(row.names(factors))`\
-Varav `r length(which(factors$sample == "test"))` prover utöver de `r STDEV_NO` första.
+Standard deviation is calculated from the first `r STDEV_NO` samples.\
+Total number of samples: `r length(row.names(factors))`\
+Number of test samples: `r length(which(factors$sample == "test"))`
 
 ```{r table, echo=FALSE}
 # Print sample list and type
@@ -86,22 +86,22 @@ kable(factors, format="html", align="l")
 
 ```{r pca, echo=FALSE}
 samples.rda = rda(t(prop_table) ~ 1)
-coldict = c("stdav"="white","test"="red")
+coldict = c("stdev"="white","test"="red")
 
 if (length(row.names(factors)) >= STDEV_NO) {
   # 2STDEV stdev and test samples
-  plot(samples.rda, display="sites", type="n", main="2 standardavvikelser")
+  plot(samples.rda, display="sites", type="n", main="2 standard deviations")
   with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
-  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
   with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
   if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
     with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
   }
     
   # 3STDEV stdev and test samples
-  plot(samples.rda, display="sites", type="n", main="3 standardavvikelser")
+  plot(samples.rda, display="sites", type="n", main="3 standard deviations")
   with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
-  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+  with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
   with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
   if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
     with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
@@ -114,9 +114,9 @@ if (length(row.names(factors)) >= STDEV_NO) {
     } else {
       ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     }
-    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
-    title(main=paste0("2 standardavvikelser - max de senaste ", MAX_LABELS, " test-proverna"))
+    title(main=paste0("2 standard deviations - max. ", MAX_LABELS, " of the latest test samples"))
   }
 
   # 3STDEV - only show test samples with stdev ellipses
@@ -126,28 +126,28 @@ if (length(row.names(factors)) >= STDEV_NO) {
     } else {
       ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     }
-    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdav", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+    with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
-    title(main=paste0("3 standardavvikelser - max de senaste ", MAX_LABELS, " test-proverna"))
+    title(main=paste0("3 standard deviations - max. ", MAX_LABELS, " of the latest test samples"))
   }
 
 } else if (length(row.names(factors)) > 2) {
     if (length(row.names(factors)) >= 8) {
-      plot(samples.rda, display="sites", type="points", pch=21, main=paste0("PCA positiva kontroller - färre än ", STDEV_NO, " prover"))
+      plot(samples.rda, display="sites", type="points", pch=21, main=paste0("PCA - less than ", STDEV_NO, " samples"))
       ordipointlabel(samples.rda, display="sites", cex=0.75, pch=21)
     }
     else {
-      plot(samples.rda, display="sites", type="text", main=paste0("PCA positiva kontroller - färre än ", STDEV_NO, " prover"))
+      plot(samples.rda, display="sites", type="text", main=paste0("PCA - less than ", STDEV_NO, " samples"))
     }
 
 } else {
-  cat("För få prover för PCA")
+  cat("Too few samples for PCA")
 }
 
 ```
 
-### Relativ abundans av mock- och spikarter
-Max `r MAX_SAMPLES` av de senaste testproverna visas.
+### Relative abundance of mock species
+A maximum of `r MAX_SAMPLES` of the latest test sampels are shown.
 
 ```{r mock species, echo=FALSE}
 mock_table = prop_table[row.names(prop_table) %in% MOCK_SPP,]
@@ -162,8 +162,8 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
   par(mar=c(18,6,2,0), oma=c(0, 0, 0, 0))
   layout(matrix(c(1,1,1,1,1,2), nrow=1, ncol=6, byrow=TRUE))
   if (length(row.names(factors)) >= STDEV_NO) {
-    sd_samples = sd(mock_table[i,which(factors$sample == "stdav")])
-    mean_samples = mean(mock_table[i,which(factors$sample == "stdav")])
+    sd_samples = sd(mock_table[i,which(factors$sample == "stdev")])
+    mean_samples = mean(mock_table[i,which(factors$sample == "stdev")])
     
     plot(mock_table[i,], ylab=paste0("% ", row.names(mock_table)[i]), xlab="", xaxt="n", ylim=c(mean_samples-(3*sd_samples),mean_samples+(3*sd_samples)), pch=21, bg=c("white", "red")[factors$sample], cex=1.5, cex.lab=1.5)
     axis(1, labels=dimnames(mock_table)[[2]], at=1:ncol(mock_table), las=2, cex=1.5, cex.axis=1)
@@ -186,14 +186,14 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
     
     plot.new()
     par(mar=c(1,1,1,1), oma=c(0, 0, 0, 0))
-    legend('bottomright', legend=c("stdav"), pch=21, pt.bg=c("white"), cex=1.5)
+    legend('bottomright', legend=c("stdev"), pch=21, pt.bg=c("white"), cex=1.5)
   }
 }
 ```
 
-### Programvara
+### Software
 
-Den här rapporten genererades med:\
+This report was generated with:\
 `r params$github`\
 R `r getRversion()`\
 R markdown `r packageVersion('rmarkdown')`\
