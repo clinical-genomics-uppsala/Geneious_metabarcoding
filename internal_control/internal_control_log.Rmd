@@ -84,6 +84,8 @@ kable(factors, format="html", align="l")
 
 ### PCA
 
+Two latest samples in yellow.
+
 ```{r pca, echo=FALSE}
 samples.rda = rda(t(prop_table) ~ 1)
 coldict = c("stdev"="white","test"="red")
@@ -93,6 +95,8 @@ if (length(row.names(factors)) >= STDEV_NO) {
   plot(samples.rda, display="sites", type="n", main="2 standard deviations")
   with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
   with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+  with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
+  with(factors, text(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), cex=0.75))
   with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
   if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
     with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
@@ -102,6 +106,8 @@ if (length(row.names(factors)) >= STDEV_NO) {
   plot(samples.rda, display="sites", type="n", main="3 standard deviations")
   with(factors, points(samples.rda, display="sites", pch=21, bg=as.character(coldict[sample])))
   with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+  with(factors, text(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), cex=0.75))
+  with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
   with(factors, legend("topright", legend=levels(sample), bty="n", pch=21, col="black", pt.bg=coldict))
   if (length(which(test_samples) == TRUE) > 0 & length(which(test_samples) == TRUE) < 3) {
     with(factors, text(samples.rda, display="sites", select=test_samples, cex=0.75))
@@ -115,6 +121,7 @@ if (length(row.names(factors)) >= STDEV_NO) {
       ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     }
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=2, draw="polygon", col="skyblue", border="blue"))
+    with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
     title(main=paste0("2 standard deviations - max. ", MAX_LABELS, " of the latest test samples"))
   }
@@ -127,6 +134,7 @@ if (length(row.names(factors)) >= STDEV_NO) {
       ordipointlabel(samples.rda, select=test_samples, display="sites", cex=0.75, pch=21, bg="red")
     }
     with(factors, ordiellipse_custom_scale(samples.rda, sample, show.groups="stdev", kind="sd", scale.custom=3, draw="polygon", col="skyblue", border="blue"))
+    with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
     with(factors, legend("topright", legend="test", bty="n", pch=21, col="black", pt.bg="red"))
     title(main=paste0("3 standard deviations - max. ", MAX_LABELS, " of the latest test samples"))
   }
@@ -134,10 +142,13 @@ if (length(row.names(factors)) >= STDEV_NO) {
 } else if (length(row.names(factors)) > 2) {
     if (length(row.names(factors)) >= 8) {
       plot(samples.rda, display="sites", type="points", pch=21, main=paste0("PCA - less than ", STDEV_NO, " samples"))
+      with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
       ordipointlabel(samples.rda, display="sites", cex=0.75, pch=21)
+      with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
     }
     else {
       plot(samples.rda, display="sites", type="text", main=paste0("PCA - less than ", STDEV_NO, " samples"))
+      with(factors, points(samples.rda, display="sites", select=c((nrow(factors)-1):nrow(factors)), pch=21, bg="yellow"))
     }
 
 } else {
