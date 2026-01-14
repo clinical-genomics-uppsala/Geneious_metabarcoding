@@ -10,7 +10,7 @@ params:
     emu: '' # For docker
     #emu: "data/emu-combined-species-counts.tsv" # For testing locally
     github: ''
-    MOCK_SPP: !r c('Staphylococcus saprophyticus', 'Cutibacterium avidum', 'Streptococcus equi', 'Imtechella halotolerans', 'Allobacillus halotolerans', 'Truepera radiovictrix')
+    MOCK_SPP: 
     STDEV_NO: 20
     MAX_LABELS: 10
     MAX_SAMPLES: 35
@@ -26,6 +26,7 @@ params:
 ```{r dependencies, include = FALSE}
 library(vegan)
 library(knitr)
+library(jsonlite)
 source("/usr/local/src/rscripts/ordiellipse_custom_scale.R") # For Docker
 #source("rscripts/ordiellipse_custom_scale.R") # For testing locally
 environment(ordiellipse_custom_scale) = asNamespace('vegan')
@@ -34,10 +35,10 @@ environment(ordiellipse_custom_scale) = asNamespace('vegan')
 ### Samples
 
 ```{r data, echo=FALSE}
-STDEV_NO = params$STDEV_NO
+STDEV_NO = as.integer(params$STDEV_NO)
 MAX_LABELS = params$MAX_LABELS
 MAX_SAMPLES = params$MAX_SAMPLES
-MOCK_SPP = params$MOCK_SPP
+MOCK_SPP = fromJSON(params$MOCK_SPP)
 
 count_table = read.csv(params$emu, header=TRUE, sep="\t")
 row.names(count_table)=count_table$species
@@ -175,7 +176,7 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
   if (length(row.names(factors)) >= STDEV_NO) {
     sd_samples = sd(mock_table[i,which(factors$sample == "stdev")])
     mean_samples = mean(mock_table[i,which(factors$sample == "stdev")])
-    
+
     plot(mock_table[i,], ylab=paste0("% ", row.names(mock_table)[i]), xlab="", xaxt="n", ylim=c(mean_samples-(3*sd_samples),mean_samples+(3*sd_samples)), pch=21, bg=c("white", "red")[factors$sample], cex=1.5, cex.lab=1.5)
     axis(1, labels=dimnames(mock_table)[[2]], at=1:ncol(mock_table), las=2, cex=1.5, cex.axis=1)
 
@@ -184,7 +185,7 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
     abline(h=mean_samples)
     abline(h=mean_samples-(2*sd_samples), lty=2)
     abline(h=mean_samples-(3*sd_samples), lty=3)
-    
+
     plot.new()
     par(mar=c(1,1,1,1), oma=c(0, 0, 0, 0))
     legend('topright', legend=c("3 sd", "2 sd"), lty=c(3,2), cex=1.5)
@@ -194,7 +195,7 @@ for (i in 1:length(dimnames(mock_table)[[1]])) {
   else {
     plot(mock_table[i,], ylab=paste0("% ", row.names(mock_table)[i]), xlab="", xaxt="n", pch=21, bg=c("white"), cex=1.5, cex.lab=1.5)
     axis(1, labels=dimnames(mock_table)[[2]], at=1:ncol(mock_table), las=2, cex=1.5, cex.axis=1)
-    
+
     plot.new()
     par(mar=c(1,1,1,1), oma=c(0, 0, 0, 0))
     legend('bottomright', legend=c("stdev"), pch=21, pt.bg=c("white"), cex=1.5)

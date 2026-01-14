@@ -16,6 +16,8 @@ emu_image = config["DEFAULT"]["emu_image"]
 vegan_image = config["DEFAULT"]["vegan_image"]
 rscript = config["DEFAULT"]["rscript"]
 path_to_data = config["DEFAULT"]["path_to_data"]
+stdev_no = config["DEFAULT"]["stdev_no"]
+mock_spp = config["DEFAULT"]["mock_spp"]
 
 # Used to check if report name is unique
 def unique_filename(path):
@@ -59,7 +61,7 @@ subprocess.run(
 
 # Run vegan container
 rscript_path = posixpath.join("/scripts", rscript)
-rmarkdown = f"rmarkdown::render(\'{rscript_path}\', params=list(emu='{emu_file_path}',github='{github}'), output_file='{report_path}')"
+rmarkdown = f"rmarkdown::render(\'{rscript_path}\', params=list(emu='{emu_file_path}', github='{github}', STDEV_NO='{stdev_no}', MOCK_SPP='{mock_spp}'), output_file='{report_path}')"
 subprocess.run(
     [
         path_to_docker,
