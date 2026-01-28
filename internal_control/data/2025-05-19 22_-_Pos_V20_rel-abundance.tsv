@@ -1,0 +1,11 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1336	0.4282873477504351	Streptococcus equi	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria			Streptococcus dysgalactiae group	5171.141436738753
+29385	0.05791697738006458	Staphylococcus saprophyticus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				699.2895848868998
+1165090	0.3049962714449422	Imtechella halotolerans	Imtechella	Flavobacteriaceae	Flavobacteriales	Flavobacteriia	Bacteroidetes	FCB group	Bacteria				3682.524981426232
+332249	0.16902808848545803	Truepera radiovictrix	Truepera	Trueperaceae	Trueperales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				2040.8451403734202
+570278	0.018311376253210707	Allobacillus halotolerans	Allobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				221.09155688126606
+80878	0.0033142762449250144	Acidovorax temperans	Acidovorax	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				40.01657138122462
+33010	0.015245670726655067	Cutibacterium avidum	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				184.07622835363327
+1747	0.001159996685723755	Cutibacterium acnes	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				14.005799983428618
+2493669	0.0017399950285856326	Mesorhizobium sp. M1D.F.Ca.ET.043.01.1.1	Mesorhizobium	Phyllobacteriaceae	Rhizobiales	Alphaproteobacteria	Proteobacteria		Bacteria				21.008699975142928
+unassigned	0.0												0.0

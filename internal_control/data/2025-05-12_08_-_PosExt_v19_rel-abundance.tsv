@@ -1,0 +1,12 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1336	0.3538136936232313	Streptococcus equi	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria			Streptococcus dysgalactiae group	11470.639947265157
+332249	0.11184454040715608	Truepera radiovictrix	Truepera	Trueperaceae	Trueperales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				3626.0
+1165090	0.3713448488587292	Imtechella halotolerans	Imtechella	Flavobacteriaceae	Flavobacteriales	Flavobacteriia	Bacteroidetes	FCB group	Bacteria				12039.0
+33010	0.024768661320172733	Cutibacterium avidum	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				803.0
+29385	0.0812152991980259	Staphylococcus saprophyticus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				2633.0
+570278	0.05207773142303647	Allobacillus halotolerans	Allobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				1688.3600527348424
+80878	0.0011412708204811845	Acidovorax temperans	Acidovorax	Comamonadaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				37.0
+241425	0.0004865819155046952	Crinalium epipsammum	Crinalium	Gomontiellaceae	Oscillatoriales		Cyanobacteria	Terrabacteria group	Bacteria				15.774985700662219
+329	0.0027760641579272056	Ralstonia pickettii	Ralstonia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				90.0
+54313	0.0005313082757352801	Tychonema bourrellyi	Tychonema	Microcoleaceae	Oscillatoriales		Cyanobacteria	Terrabacteria group	Bacteria				17.22501429933778
+unassigned	0.0												14.0
