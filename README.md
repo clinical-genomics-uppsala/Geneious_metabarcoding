@@ -1,5 +1,7 @@
 # Geneious workflow for classification of nanopore metabarcoding data
 
+![Workflow overview](images/Geneious_metabarcoding.png?raw=true)  
+
 [Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers and randomly subsetting sequences for emu.
 
 Input: FASTQ files. Sample file names should preferably start with barcode no: 01, 02.. or with barcode49, barcode27. Sample names should not contain any spaces, dots or special characters (å/ä/ö etc).  
@@ -36,7 +38,7 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t ordered=t trd=t [otherOptions]` 
 	- 'Command Line' (example for Windows):  
 	<code>C:\Program\` Files\Geneious\` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program\` Files\Geneious\` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t ordered=t trd=t [otherOptions]</code>
-	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' 
+	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' and 'Name in Geneious:' `[inputNames]`
 - Step 3:
 	Press 'Add' to add two user options:
 	- 'Command Line Switch': `ref`, 'Option Label': Path to primer FASTA file, 'Name-Value Separator': =
@@ -62,9 +64,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
 	- 'Command Line':
 		`-o emu_output.tsv -g [inputFolderName] [otherOptions] 2>&1 > log.txt`
-	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)'
+	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)' and 'Name in Geneious:' `log` (for example)
 - Step 3:  
-
 	Press 'Add' to add two user options (in this order):
 	- 'Command Line Switch': `config_file`, 'Option Label': Path to config file 
 	- 'Command Line Switch': `path_to_data`, 'Option Label': Data path  
@@ -80,7 +81,7 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- Edit the two BBDuk steps. One step to trim primers from left end (27F and 1492R) and one for right end (27F_rev and 1492R_rev).
 3. Import `16S_nanopore_pre-processing_Emu.geneiousWorkflow`
 	- Add the `16S_nanopore_pre-processing.geneiousWorkflow` workflow to the corresponding step.
-	- Add the Emu wrapper plugin to the corresponding step.
+	- Add the Emu wrapper plugin to the corresponding step. 'Expose all options' must be selected for the options to be visible when starting the workflow.
 
 &nbsp;
 &nbsp;
@@ -93,8 +94,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 [SOFTWARE]
 path_to_docker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
 git_version = dev
-krona_image = hydragenetics/krona:2025-04-09
-emu_image = hydragenetics/emu:3.5.4
+krona_image = hydragenetics/krona:<tag>
+emu_image = hydragenetics/emu:<tag>
 ```
 Docker images are downloaded automatically but can also be downloaded from:  
 `docker pull hydragenetics/emu:<tag>`  
@@ -102,8 +103,8 @@ Docker images are downloaded automatically but can also be downloaded from:
 
 | Geneious_metabarcoding | image |
 | -------- | ------- |
-| dev | hydragenetics/emu:3.5.4 |
-| dev | hydragenetics/krona:2025-04-09 | 
+| 1.1.0 | hydragenetics/emu:3.5.4 |
+| 1.1.0 | hydragenetics/krona:2025-04-09 | 
 
 
 Parameters for emu, see the emu documentation for details.
@@ -145,11 +146,11 @@ In Geneious, the output will be a log file. Full output will be saved to disk in
 
 If needed, docker images can be built locally from the docker files in this repo:  
 `cd docker`  
-`docker build -f emu.Dockerfile -t emu:<tag>> .`  
-`docker build -f krona.Dockerfile -t krona:<tag>> .`
+`docker build -f emu.Dockerfile -t emu:<tag> .`  
+`docker build -f krona.Dockerfile -t krona:<tag> .`
 
 Transfer docker image to another computer:  
-`docker save -o path/to/emu.tar emu:<tag>>`  
+`docker save -o path/to/emu.tar emu:<tag>`  
 `docker load -i path/to/emu.tar` 
 
 
