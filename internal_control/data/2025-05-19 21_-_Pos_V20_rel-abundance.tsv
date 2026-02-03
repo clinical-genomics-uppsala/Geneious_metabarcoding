@@ -1,0 +1,10 @@
+tax_id	abundance	species	genus	family	order	class	phylum	clade	superkingdom	subspecies	species subgroup	species group	estimated counts
+1165090	0.30483613600098175	Imtechella halotolerans	Imtechella	Flavobacteriaceae	Flavobacteriales	Flavobacteriia	Bacteroidetes	FCB group	Bacteria				4966.999999999996
+1336	0.3649809745918743	Streptococcus equi	Streptococcus	Streptococcaceae	Lactobacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria			Streptococcus dysgalactiae group	5947.0
+332249	0.19712777709586377	Truepera radiovictrix	Truepera	Trueperaceae	Trueperales	Deinococci	Deinococcus-Thermus	Terrabacteria group	Bacteria				3212.000000000004
+570278	0.04762489259850251	Allobacillus halotolerans	Allobacillus	Bacillaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				776.0
+29385	0.04891371056830735	Staphylococcus saprophyticus	Staphylococcus	Staphylococcaceae	Bacillales	Bacilli	Firmicutes	Terrabacteria group	Bacteria				797.0
+33010	0.03436847919479563	Cutibacterium avidum	Cutibacterium	Propionibacteriaceae	Propionibacteriales	Actinobacteria	Actinobacteria	Terrabacteria group	Bacteria				560.0
+40214	0.0007364674113170492	Acinetobacter johnsonii	Acinetobacter	Moraxellaceae	Pseudomonadales	Gammaproteobacteria	Proteobacteria		Bacteria				12.0
+329	0.0014115625383576778	Ralstonia pickettii	Ralstonia	Burkholderiaceae	Burkholderiales	Betaproteobacteria	Proteobacteria		Bacteria				23.0
+unassigned	0.0												1.0

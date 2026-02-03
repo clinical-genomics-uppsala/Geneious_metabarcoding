@@ -11,10 +11,13 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 github = config["DEFAULT"]["github"]
-pathToDocker = config["DEFAULT"]["pathToDocker"]
-emuImage = config["DEFAULT"]["emuImage"]
-veganImage = config["DEFAULT"]["veganImage"]
-pathToData = config["DEFAULT"]["pathToData"]
+path_to_docker = config["DEFAULT"]["path_to_docker"]
+emu_image = config["DEFAULT"]["emu_image"]
+vegan_image = config["DEFAULT"]["vegan_image"]
+rscript = config["DEFAULT"]["rscript"]
+path_to_data = config["DEFAULT"]["path_to_data"]
+stdev_no = config["DEFAULT"]["stdev_no"]
+mock_spp = config["DEFAULT"]["mock_spp"]
 
 # Used to check if report name is unique
 def unique_filename(path):
@@ -28,43 +31,47 @@ def unique_filename(path):
 # Convert windows paths docker & R compatible paths
 if os.name == "nt":
     try:
-        containerPath = pathToData.replace("\\","/").split(":")[1] 
+        container_path = path_to_data.replace("\\","/").split(":")[1] 
     except IndexError:
-        containerPath = pathToData.replace("\\","/")
+        container_path = path_to_data.replace("\\","/")
 else:
-    containerPath = pathToData
+    container_path = path_to_data
 
 # Paths
-mountPath = os.path.join(pathToData, f':{containerPath}')
-emu_file_path = posixpath.join(containerPath, 'emu-combined-species-counts.tsv')
-report_path = unique_filename(posixpath.join(containerPath, str(datetime.today().strftime("%Y-%m-%d")) + "_16S_IK_logg.html"))
+plugin_path = os.path.dirname(__file__)
+mount_path = os.path.join(path_to_data, f':{container_path}')
+emu_file_path = posixpath.join(container_path, 'emu-combined-species-counts.tsv')
+report_path = unique_filename(posixpath.join(container_path, str(datetime.today().strftime("%Y-%m-%d")) + "_16S_IK_logg.html"))
 
 # Run emu container combine-outputs
-combineOutputs = f'emu combine-outputs --counts {containerPath} species'
+combine_outputs = f'emu combine-outputs --counts {container_path} species'
 subprocess.run(
    [
-       pathToDocker,
+       path_to_docker,
        "run",
        "--rm",
        "-v",
-       mountPath,
-       emuImage,
+       mount_path,
+       emu_image,
        "/bin/bash",
        "-c",
-       combineOutputs
+       combine_outputs
    ]
 )
 
 # Run vegan container
-rmarkdown = f"rmarkdown::render(\'/usr/local/src/rscripts/internal_control_log.Rmd\', params=list(emu='{emu_file_path}',github='{github}'), output_file='{report_path}')"
+rscript_path = posixpath.join("/scripts", rscript)
+rmarkdown = f"rmarkdown::render(\'{rscript_path}\', params=list(emu='{emu_file_path}', github='{github}', STDEV_NO='{stdev_no}', MOCK_SPP='{mock_spp}'), output_file='{report_path}')"
 subprocess.run(
     [
-        pathToDocker,
+        path_to_docker,
         "run",
         "--rm",
         "-v",
-        mountPath,
-        veganImage,
+        mount_path,
+        "-v",
+        os.path.join(plugin_path,":/scripts"),
+        vegan_image,
         "Rscript",
         "-e",
         rmarkdown

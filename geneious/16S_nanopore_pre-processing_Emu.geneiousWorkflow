@@ -1,13 +1,11 @@
 <geneiousWorkflows>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing + emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="fdc01ec1-c3e4-4205-87cc-935a4c637238" revisionNumber="51" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. &lt;br&gt;&#xA;For emu, selected documents are exported to disk from where emu is run. &lt;br&gt;&#xA;Two 'Export to folder' and 'Data path' in emu plugin must be the same. &lt;br&gt; https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding&lt;/html&gt;" bundledIconName="plugin">
-    <workflowElement id="16S nanopore_ pre-processing_05a7a001-aa35-4e1e-9de8-b76e67a541c3" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
-      <Options />
-    </workflowElement>
-    <workflowElement id="BatchExport" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing + emu" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="6f1e15ff-bcac-4f4d-84cd-de8f0c719e1d" revisionNumber="52" description="&lt;html&gt;Workflow to filter, trim and classify 16S nanopore amplicon sequences. &lt;br&gt;&#xA;For Emu, selected documents are exported to disk from where Emu is run. &lt;br&gt;&#xA;'Export to folder' and 'Data path' must be the same. &lt;br&gt; https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding&lt;/html&gt;" bundledIconName="plugin">
+    <workflowElement id="16S nanopore_ pre-processing_5e4d4e58-e52c-4fa9-aa67-afb2119f1414" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement" />
+    <workflowElement id="BatchExport" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <option name="fileFormat">fastaCompressed</option>
         <option name="optionsButton">Options</option>
-        <option name="folder" extra="/Users/user/Documents/emu,C:\\Users\\funk0197\\Desktop\\16S_TEST\\test_folder,"></option>
+        <option name="folder" extra="/Users/user/Documents/emu,C:\\Users\\funk0197\\Desktop\\16S_TEST\\test_folder,C:\\Users\\funk0197\\Desktop\\16S_RUN,">C:\Users\funk0197\Desktop\16S_RUN</option>
         <option name="extension">.fasta.gz</option>
         <option name="exportOptionsXml">&lt;fasta&gt;&#xD;
   &lt;option name="wrap"&gt;false&lt;/option&gt;&#xD;
@@ -35,11 +33,11 @@
         <option name="back">2</option>
       </options>
     </workflowElement>
-    <workflowElement id="emu_wrapper_1.0.0_Ida_Karlsson" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+    <workflowElement id="emu_wrapper_1.0.0_Ida_Karlsson" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <childOption name="options">
-          <option name="config_file"></option>
-          <option name="path_to_data"></option>
+          <option name="config_file">C:\Users\funk0197\Desktop\16S_TEST\configs\2025-10-06_config.ini</option>
+          <option name="path_to_data">C:\Users\funk0197\Desktop\16S_RUN</option>
         </childOption>
       </Options>
       <optionToExpose optionName="options.config_file" label="" />
@@ -55,20 +53,20 @@
         <option name="back">2</option>
       </options>
     </workflowElement>
-    <workflowElement id="BatchExport" exposeNoOptions="false" exposeAllOptions="true" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+    <workflowElement id="BatchExport" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
         <option name="fileFormat">com.biomatters.plugins.textImporter.TextDocumentExporter</option>
         <option name="optionsButton">Options</option>
-        <option name="folder" extra="C:\\Users\\funk0197\\Desktop\\16S_TEST\\test_folder,">{DEFAULT_LOCATION}</option>
+        <option name="folder" extra="C:\\Users\\funk0197\\Desktop\\16S_TEST\\test_folder,C:\\Users\\funk0197\\Desktop\\16S_RUN,">C:\Users\funk0197\Desktop\16S_RUN</option>
         <option name="extension">.txt</option>
-        <option name="exportOptionsXml"></option>
+        <option name="exportOptionsXml" />
         <option name="exportToSingleFile">false</option>
         <option name="singleFileName">results</option>
       </Options>
       <optionToExpose optionName="fileFormat" label="" />
     </workflowElement>
   </XMLSerialisableRootElement>
-  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="05a7a001-aa35-4e1e-9de8-b76e67a541c3" revisionNumber="116" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;br&gt;https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding&lt;/html&gt;" bundledIconName="plugin">
+  <XMLSerialisableRootElement name="16S nanopore: pre-processing" author="Ida Karlsson" geneiousVersion="2023.1.2" uniqueId="5e4d4e58-e52c-4fa9-aa67-afb2119f1414" revisionNumber="121" description="&lt;html&gt;Workflow to filter and trim 16S nanopore amplicon sequences. &lt;br&gt;https://github.com/clinical-genomics-uppsala/Geneious_metabarcoding&#xA;&lt;/html&gt;" bundledIconName="plugin">
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementForEach" />
     <workflowElement id="FilterOperation" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="true" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
       <Options>
@@ -305,6 +303,61 @@
       </Options>
       <optionToExpose optionName="advancedCheckbox" label="" />
     </workflowElement>
+    <workflowElement id="Randomly Sample Sequences_1ff72560-146d-4334-b198-5546d64e00e2" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+      <Options>
+        <option name="divider_1" />
+        <childOption name="0">
+          <option name="numberOfSampleSets">1</option>
+          <option name="sequencesPerSet">100000</option>
+          <option name="useFirstSequences">false</option>
+          <option name="randomSeed">0</option>
+        </childOption>
+      </Options>
+      <optionToExpose optionName="divider_1" label="" />
+    </workflowElement>
+    <workflowElement id="batchRename" exposeNoOptions="true" exposeAllOptions="false" suppressErrors="false" showButtonForExposedGroup="false" groupNameForExposedOptions="" type="com.biomatters.plugins.workflows.DocumentOperationWorkflowElement">
+      <Options>
+        <option name="advancedCheckbox">true</option>
+        <option name="customComponent1" />
+        <childOption name="renameMethodChildOptions">
+          <option name="selectedRenameMethod">renamableOption2</option>
+          <childOption name="BatchRenameSubOptions0">
+            <option name="attributeProcedure">nameProcedure</option>
+            <option name="startBatchIndexOption">0</option>
+            <option name="endBatchIndexInclusiveOption">2147483647</option>
+            <option name="sequencesInSequenceListDocumentRenamableSequenceType">allSequencesInListOption</option>
+          </childOption>
+          <childOption name="BatchRenameSubOptions1">
+            <option name="attributeProcedure">nameProcedure</option>
+            <option name="followAndRenameReferences">true</option>
+          </childOption>
+          <childOption name="BatchRenameSubOptions2">
+            <option name="selectedFieldComboOption">fieldOptioncache_name</option>
+          </childOption>
+        </childOption>
+        <childOption name="basicSuperOptions">
+          <option name="task">replaceWithRadioButton</option>
+          <option name="r1">fieldOptioncache_name</option>
+          <option name="rSep" />
+          <option name="r2">nothingSelectedOption</option>
+          <option name="rSep2" />
+          <option name="r3">nothingSelectedOption</option>
+          <option name="appendTextField" />
+          <option name="appendPositionComboBox">endValue</option>
+          <option name="removeHowMuchIntegerOption">1</option>
+          <option name="removePositionComboBox">endValue</option>
+        </childOption>
+        <childOption name="advancedSuperOptions">
+          <option name="replaceWhatTypeRadioOption">matchesOption</option>
+          <option name="replaceWhatTextField">(^\S{1,7} sequences from )(\S+)</option>
+          <option name="ignoreCaseCheckbox">false</option>
+          <option name="isRegexCheckbox">true</option>
+          <option name="replaceWithTextField">{match[2]}</option>
+          <option name="plusButton">Add Property...</option>
+        </childOption>
+      </Options>
+      <optionToExpose optionName="advancedCheckbox" label="" />
+    </workflowElement>
     <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementSaveAndContinue">
       <options>
         <option name="save">true</option>
@@ -315,6 +368,109 @@
         <option name="doWhat">continue</option>
         <option name="back">2</option>
       </options>
+    </workflowElement>
+  </XMLSerialisableRootElement>
+  <XMLSerialisableRootElement name="Randomly Sample Sequences" geneiousVersion="2023.1.2" uniqueId="1ff72560-146d-4334-b198-5546d64e00e2" revisionNumber="5" description="&lt;html&gt;&lt;center&gt;&#xA;Randomly samples  (without replacement) a specified number of sequences&lt;br&gt;&#xA;from a list. If a selected read is paired, the mate sequence is included next.&lt;/center&gt;&lt;/html&gt;" bundledIconName="nucleotideList">
+    <workflowElement type="com.biomatters.plugins.workflows.WorkflowElementCustomCode">
+      <code>import jebl.util.CompositeProgressListener;
+
+public static Options getOptions() throws DocumentOperationException {
+	Options options = new Options(getThisClass());
+    Options.IntegerOption numberOfSampleSets = options.addIntegerOption("numberOfSampleSets", "Number of sample sets per document: ",1,1,Integer.MAX_VALUE);
+    options.addIntegerOption("sequencesPerSet","Sequences per set: ",1000,1,Integer.MAX_VALUE);
+    Options.BooleanOption useFirstSequences = options.addBooleanOption("useFirstSequences", "Use first sequences from list instead of randomly sampling", false);
+    Options.IntegerOption seed = options.addIntegerOption("randomSeed", "Random seed : ", 0, 0, Integer.MAX_VALUE);
+    seed.setUnits("(0=random; any other value creates reproducible results)");
+    useFirstSequences.addDependent(seed, false);
+    useFirstSequences.addDependent(numberOfSampleSets, false);
+    numberOfSampleSets.setDisabledValue(1);
+ 	return options;
+}
+
+public static List&lt;AnnotatedPluginDocument&gt; performOperation(List&lt;AnnotatedPluginDocument&gt; documents, Options options,
+															 ProgressListener progressListener) throws DocumentOperationException {
+	List&lt;AnnotatedPluginDocument&gt; results = new ArrayList&lt;AnnotatedPluginDocument&gt;();
+    int sampleSize = ((Options.IntegerOption)options.getOption("sequencesPerSet")).getValue();
+    int samples = ((Options.IntegerOption)options.getOption("numberOfSampleSets")).getValue();
+    int seed = ((Options.IntegerOption)options.getOption("randomSeed")).getValue();
+    boolean useFirstSequences = ((Options.BooleanOption)options.getOption("useFirstSequences")).getValue();
+    if (useFirstSequences) {
+        samples = 1;
+    }
+    if (seed==0)
+        seed = new Random().nextInt();
+    CompositeProgressListener compositeProgressListener = new CompositeProgressListener(progressListener, documents.size() * samples);
+    Random r = new Random(seed);
+	
+    for (AnnotatedPluginDocument document : documents) {
+        for (int sampleSet = 1; sampleSet &lt;= samples; sampleSet++) {
+            compositeProgressListener.beginSubtask();
+            if (compositeProgressListener.isCanceled())
+                throw new DocumentOperationException.Canceled();
+            final PluginDocument pluginDocument = document.getDocument();
+            if (!(pluginDocument instanceof SequenceListDocument))
+                throw new DocumentOperationException("Can only randomly sample sequence lists");
+            PairedReads pairedReads = null;
+            List&lt;? extends SequenceDocument&gt; sequences = ((SequenceListDocument) pluginDocument).getNucleotideSequences();
+            SequenceListOnDisk.Builder builder;
+            if (sequences.isEmpty()) {
+                sequences = ((SequenceListDocument) pluginDocument).getAminoAcidSequences();
+                builder = new SequenceListOnDisk.Builder(false, SequenceDocument.Alphabet.PROTEIN, false);
+            } else {
+                builder = new SequenceListOnDisk.Builder(false, SequenceDocument.Alphabet.NUCLEOTIDE, false);
+                if (pluginDocument instanceof PairedReads) {
+                    pairedReads = (PairedReads) pluginDocument;
+                }
+            }
+            int sequenceCount = sequences.size();
+            int thisSampleSize = Math.min(sequenceCount, sampleSize);
+            BitSet sequencesToUse = new BitSet(sequenceCount);
+            int sequencesPicked = 0;
+            while (sequencesPicked &lt; thisSampleSize) {
+                int sequenceIndex = useFirstSequences?sequencesPicked:r.nextInt(sequenceCount);
+                if (sequencesToUse.get(sequenceIndex))
+                    continue;
+                sequencesToUse.set(sequenceIndex);
+                sequencesPicked++;
+                if (sequencesPicked &lt; thisSampleSize &amp;&amp; pairedReads != null &amp;&amp; pairedReads.getMateIndex(sequenceIndex) &gt;= 0) {
+                    final int mateIndex = pairedReads.getMateIndex(sequenceIndex);
+                    if (!sequencesToUse.get(mateIndex)) {
+                        sequencesToUse.set(mateIndex);
+                        sequencesPicked++;
+                    }
+                }
+            }
+
+            sequencesPicked = 0;
+            for (int i = 0; i &lt; sequenceCount; i++) {
+                if (compositeProgressListener.setProgress(i, sequenceCount))
+                    throw new DocumentOperationException.Canceled();
+                if (!sequencesToUse.get(i))
+                    continue;
+                if (pairedReads != null &amp;&amp; pairedReads.getMateIndex(i) &gt;= 0 &amp;&amp; sequencesToUse.get(pairedReads.getMateIndex(i))) {
+                    final int mateIndex = pairedReads.getMateIndex(i);
+                    if (mateIndex &lt; i)
+                        continue; // already done
+                    builder.addSequenceWithMate(sequences.get(i), sequences.get(mateIndex), pairedReads.getMateExpectedDistance(i), pairedReads.getMateExpectedDistance(mateIndex), ProgressListener.EMPTY);
+                    sequencesPicked+=2;
+                } else {
+                    builder.addSequence(sequences.get(i), ProgressListener.EMPTY);
+                    sequencesPicked++;
+                }
+                if (sequencesPicked&gt;=thisSampleSize)
+                    break;
+            }
+            final DefaultSequenceListDocument resultDocument = builder.toSequenceListDocument(ProgressListener.EMPTY);
+            String name = StringUtilities.commaFormat(thisSampleSize) + " sequences from " + document.getName();
+            if (samples&gt;1)
+                name+=" set "+sampleSet;
+            resultDocument.setName(name);
+            results.add(DocumentUtilities.createAnnotatedPluginDocument(resultDocument));
+        }
+    }
+    return results;
+
+}</code>
     </workflowElement>
   </XMLSerialisableRootElement>
 </geneiousWorkflows>

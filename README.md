@@ -2,7 +2,7 @@
 
 ![Workflow overview](images/Geneious_metabarcoding.png?raw=true)  
 
-[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers. The workflow is currently adapted to 16S sequences using the emu standard database. The emu database is "a combination of rrnDB v5.6 and NCBI 16S RefSeq from 17 September, 2020. Taxonomy is also from NCBI on the same date. The resulting database contains 49,301 sequences from 17,555 unique bacterial and archaeal species". Post-processing includes Krona plots and a report in excel format.
+[Geneious](https://www.geneious.com) workflow to analyze nanopore metabarcoding data. The workflow performs pre-processing and runs a wrapper plugin for [emu](https://github.com/treangenlab/emu) for taxonomic classification of sequences. Pre-processing includes length filtering, matching and trimming of primers and randomly subsetting sequences for emu.
 
 Input: FASTQ files. Sample file names should preferably start with barcode no: 01, 02.. or with barcode49, barcode27. Sample names should not contain any spaces, dots or special characters (å/ä/ö etc).  
 Main outputs: [Krona plots](data/test_report/krona.html) and [Excel report](data/test_report/emu.xlsx) for each run.
@@ -35,12 +35,17 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
 	- 'Format:' select 'FastQ (Sanger scores)'.
 	- 'Command Line' (for Mac):  
-		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t` 
+		`-Xmx1g in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t ordered=t trd=t [otherOptions]` 
 	- 'Command Line' (example for Windows):  
-	`C:\Program`` Files\Geneious`` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program`` Files\Geneious`` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t k=19 hdist=3 literal=AGAGTTTGATCMTGGCTCAG,CGGTTACCTTGTTACGACTT ordered=t trd=t`
+	<code>C:\Program\` Files\Geneious\` Prime\jre\bin\java.exe -ea -Xmx1g -cp C:\Program\` Files\Geneious\` Prime\bundledPlugins\com.biomatters.plugins.bbtools.BBToolsPlugin\com\biomatters\plugins\bbtools\BBMap_38.84\bbmap\bbmap.jar jgi.BBDuk2 in=[inputFileNames] out=nomatch.fastq outm=match.fastq rcomp=t copyundefined=t ordered=t trd=t [otherOptions]</code>
 	- Under 'Output' 'File Name:' `match.fastq` and select 'Format:' 'Auto-detect' and 'Name in Geneious:' `[inputNames]`
 - Step 3:
-	Press 'OK'
+	Press 'Add' to add two user options:
+	- 'Command Line Switch': `ref`, 'Option Label': Path to primer FASTA file, 'Name-Value Separator': =
+	- 'Command Line Switch': `hdist`, 'Option Label': Hamming distance, 'Name-Value Separator': =
+	- 'Command Line Switch': `k`, 'Option Label': kmer length, 'Name-Value Separator': =
+	
+	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be customized.
 
 ### 2. Create Emu wrapper plugin
 Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
@@ -52,6 +57,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 		`emu.bat` under 'Windows'  
 	- 'Additional Bundled Files (optional)' add:
 	 `emu.py` and `emu_report.py`
+	 `emu-prebuilt` database directory
+	 any other databases
 - Step 2: 
 	- 'Sequence Type:' select 'Nucleotide only'.
 	- 'Document Type:' select 'Unaligned Sequences (1+)'.
@@ -60,8 +67,8 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 	- Under 'Output' 'File Name:' `log.txt` and select 'Format:' 'Text file (plain)' and 'Name in Geneious:' `log` (for example)
 - Step 3:  
 	Press 'Add' to add two user options (in this order):
-	- 'Command Line Switch': config_file, 'Option Label': Path to config file 
-	- 'Command Line Switch': path_to_data, 'Option Label': Data path  
+	- 'Command Line Switch': `config_file`, 'Option Label': Path to config file 
+	- 'Command Line Switch': `path_to_data`, 'Option Label': Data path  
  
 	Both 'Command Line Switch' and 'Option Label' should be filled in. Labels can be customized.
 
@@ -86,9 +93,9 @@ Go to 'File' --> 'Create/Edit Wrapper Plugin..'. Press '+New'
 ```
 [SOFTWARE]
 path_to_docker = C:\Program Files\Docker\Docker\resources\bin\docker.exe
-git_version = 1.0.0
-krona_image = hydragenetics/krona:2025-04-09
-emu_image = hydragenetics/emu:2025-04-15
+git_version = dev
+krona_image = hydragenetics/krona:<tag>
+emu_image = hydragenetics/emu:<tag>
 ```
 Docker images are downloaded automatically but can also be downloaded from:  
 `docker pull hydragenetics/emu:<tag>`  
@@ -96,15 +103,15 @@ Docker images are downloaded automatically but can also be downloaded from:
 
 | Geneious_metabarcoding | image |
 | -------- | ------- |
-| v1.0.0 | hydragenetics/emu:2025-04-15 |
-| v1.0.0 | hydragenetics/krona:2025-04-09 | 
+| 1.1.0 | hydragenetics/emu:3.5.4 |
+| 1.1.0 | hydragenetics/krona:2025-04-09 | 
 
 
 Parameters for emu, see the emu documentation for details.
 ```
 [EMU]
 seq_type = map-ont				# --type
-database = 16S/emu-prebuilt		# --db
+database = emu-prebuilt			# --db
 min_abund = 0.0001				# --min-abundance
 align_n = 50					# --N
 batch_k = 500000000				# --K
@@ -139,9 +146,20 @@ In Geneious, the output will be a log file. Full output will be saved to disk in
 
 If needed, docker images can be built locally from the docker files in this repo:  
 `cd docker`  
-`docker build -f emu.Dockerfile -t emu:<tag>> .`  
-`docker build -f krona.Dockerfile -t krona:<tag>> .`
+`docker build -f emu.Dockerfile -t emu:<tag> .`  
+`docker build -f krona.Dockerfile -t krona:<tag> .`
 
 Transfer docker image to another computer:  
-`docker save -o path/to/emu.tar emu:<tag>>`  
+`docker save -o path/to/emu.tar emu:<tag>`  
 `docker load -i path/to/emu.tar` 
+
+
+## Citations
+
+Curry, K.D. et al. (2022) ‘Emu: species-level microbial community profiling of full-length 16S rRNA Oxford Nanopore sequencing data’, Nature Methods, 19(7), pp. 845–853. https://doi.org/10.1038/s41592-022-01520-4.
+
+Stoddard, S.F. et al. (2015) ‘rrnDB: improved tools for interpreting rRNA gene abundance in bacteria and archaea and a new foundation for future development’, Nucleic Acids Research, 43 (Database issue), pp. D593–D598. https://doi.org/10.1093/nar/gku1201.
+
+O’Leary, N.A. et al. (2016) ‘Reference sequence (RefSeq) database at NCBI: current status, taxonomic expansion, and functional annotation’, Nucleic Acids Research, 44(D1), pp. D733–D745. https://doi.org/10.1093/nar/gkv1189.
+
+Schoch, C.L. et al. (2020) ‘NCBI Taxonomy: a comprehensive update on curation, resources and tools’, Database, 2020, p. baaa062. https://doi.org/10.1093/database/baaa062.
