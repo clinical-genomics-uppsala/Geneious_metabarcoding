@@ -29,19 +29,6 @@ else:
     EMUFOLDER = "data/test_report/"
 
 ##########
-LONG_DF_DROP= [
-            "genus",
-            "family",
-            "order",
-            "class",
-            "phylum",
-            "clade",
-            "superkingdom",
-            "subspecies",
-            "species subgroup",
-            "species group",
-    ]
-
 LONG_DF_HEADER = ["species", "tax_id", "abundance", "estimated counts", "abundance total", "% total"]
 
 
@@ -57,11 +44,14 @@ def sort_samples(df, sortabund):
     taxonomy = [
         name for name in header if not name[0].isdigit() if "barcode" not in name
     ]
+
     # sort sample columns by name, not taxonomy
     samples = np.sort(df.columns.difference(taxonomy)).tolist()
+
     # remove columns with threshold - duplicates
     samples = [sample for sample in samples if "threshold" not in sample]
     df = df.loc[:, taxonomy + samples].set_index(taxonomy)  # taxonomy as index columns
+    df.index.names = taxonomy
 
     if sortabund == "yes":
         # Remove and save unmapped/unclassified/unassigned row
@@ -74,6 +64,7 @@ def sort_samples(df, sortabund):
             .drop(["sum"], axis=1)
         )
         df = pd.concat([df, unassigned.to_frame().T])
+        df.index.names = taxonomy
         return df
     else:
         return df
@@ -115,11 +106,11 @@ def sample_tsv_to_list(sample_dict):
     return long_list
 
 
-def create_long_df(long_list, df_drop, df_header):
+def create_long_df(long_list, df_header):
     """ Convert list of rel-abundance data to one dataframe for all samples """
     long_df = pd.concat(long_list, axis=0, ignore_index=True)
     long_df = long_df.set_index("Sample")
-    long_df = long_df.drop(df_drop, axis=1,)
+    long_df = long_df[long_df.columns.intersection(df_header)]
     long_df = long_df[df_header]
     unmapped = long_df["tax_id"] == "unmapped"
     unclassified = long_df["tax_id"] == "mapped_unclassified"
@@ -148,7 +139,7 @@ def create_qc_df(fasta_csv, long_df):
 # LONG FORMAT - rel-abundance.tsv
 all_samples = create_sample_file_dict(EMUFOLDER)
 all_samples_list = sample_tsv_to_list(all_samples)
-long_format_df = create_long_df(all_samples_list, LONG_DF_DROP, LONG_DF_HEADER)
+long_format_df = create_long_df(all_samples_list, LONG_DF_HEADER)
 
 # COUNTS EMU - tsv
 count_data = pd.read_csv(COUNT_FILE, sep="\t", header=0)
