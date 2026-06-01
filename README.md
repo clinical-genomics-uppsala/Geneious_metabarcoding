@@ -106,6 +106,11 @@ Docker images are downloaded automatically but can also be downloaded from:
 | 1.1.0 | hydragenetics/emu:3.5.4 |
 | 1.1.0 | hydragenetics/krona:2025-04-09 | 
 
+Whether the database uses NCBI taxids (emu default db) or not (for example the UNITE database):
+```
+[KRONA]
+ncbi_taxids = True
+```
 
 Parameters for emu, see the emu documentation for details.
 ```

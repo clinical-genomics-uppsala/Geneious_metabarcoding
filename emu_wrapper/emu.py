@@ -55,6 +55,8 @@ if config.getboolean("EMU", "keep_read_assignments"):
 if config.getboolean("EMU", "output_unclassified"):
     emu_booleans.append("--output-unclassified")
 
+# Krona
+ncbi_taxids = config["KRONA"].getboolean("ncbi_taxids")
 
 def run_subprocess(command, name):
     """Run subprocess command, print stdout, stderr, process name and exit status"""
@@ -150,23 +152,6 @@ if len(infiles) > 0:
 else:
     sys.exit("No fasta files in " + path_to_data + " (.fa/.fasta/.fa.gz./fasta.gz)")
 
-# Krona plot
-krona_import_taxonomy = (
-    "ktImportTaxonomy -t 1 -m 14 -o /geneious/krona.html /geneious/*_rel-abundance.tsv"
-)
-krona_subprocess = [
-    path_to_docker,
-    "run",
-    "--rm",
-    "-v",
-    mount_path,
-    krona_image,
-    "/bin/bash",
-    "-c",
-    krona_import_taxonomy,
-]
-if run_subprocess(krona_subprocess, "krona")[1] != 0:
-    error_counter += 1
 
 # Combine output and import in Geneious
 # Run emu combine-outputs for selected folder - both relative abundance and counts
@@ -183,6 +168,50 @@ combine_outputs_subprocess = [
     emu_combine_outputs,
 ]
 if run_subprocess(combine_outputs_subprocess, "combine_outputs")[1] != 0:
+    error_counter += 1
+
+
+# Krona plot
+if ncbi_taxids == True:
+    krona_command = (
+        "ktImportTaxonomy -t 1 -m 14 -o /geneious/krona.html /geneious/*_rel-abundance.tsv"
+    )
+elif ncbi_taxids == False:
+    for file in os.listdir(path_to_data):
+        if file.endswith("_rel-abundance.tsv"):
+            prep_krona_command = "python scripts/prep_krona.py " + os.path.join("/geneious", file)
+            prep_krona_subprocess = [
+            path_to_docker,
+            "run",
+            "--rm",
+            "-v",
+            mount_path,
+            "-v",
+            os.path.join(plugin_path, ":/scripts"),
+            emu_image,
+            "/bin/bash",
+            "-c",
+            prep_krona_command,
+            ]
+            if run_subprocess(prep_krona_subprocess, "prep_krona")[1] != 0:
+                error_counter += 1
+
+    krona_command = (
+        "ktImportText -o /geneious/krona.html /geneious/*_rel-abundance_krona.tsv"
+    )
+
+krona_subprocess = [
+    path_to_docker,
+    "run",
+    "--rm",
+    "-v",
+    mount_path,
+    krona_image,
+    "/bin/bash",
+    "-c",
+    krona_command,
+]
+if run_subprocess(krona_subprocess, "krona")[1] != 0:
     error_counter += 1
 
 
