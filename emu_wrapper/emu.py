@@ -179,7 +179,7 @@ if ncbi_taxids == True:
 elif ncbi_taxids == False:
     for file in os.listdir(path_to_data):
         if file.endswith("_rel-abundance.tsv"):
-            prep_krona_command = "python scripts/prep_krona.py " + os.path.join("/geneious", file)
+            prep_krona_command = "python scripts/prep_krona.py " + posixpath.join("/geneious", file)
             prep_krona_subprocess = [
             path_to_docker,
             "run",
